@@ -1,0 +1,62 @@
+\documentclass{article}
+\begin{document}
+What we want to calculate in using QMC
+\begin{equation}
+\frac{dE}{dp} = \int dR \Psi^2 \frac{H\Psi}{\Psi} \frac{\partial_p \Psi}{\Psi}  - \int dR \Psi^2 \frac{H\Psi}{\Psi} \int dR \Psi^2 \frac{\partial_p \Psi}{\Psi}
+\end{equation}
+
+A naive estimator of this quantity using QMC would be 
+\begin{equation}
+\langle \langle (E_L(R) - \langle \langle E_L \rangle \rangle) \frac{\partial_p\Psi}{\Psi} \rangle \rangle, \langle \langle \ \rangle \rangle = \frac{1}{M} \sum_{i=1}^M
+\end{equation}
+This estimator is unbiased but has an infinite variance. The infinity arises in the following term in the expression for the variance, which diverges near the nodes
+$$ 
+\int dR \Psi^2 (E_L \frac{\partial_p \Psi}{\Psi})^2 
+$$
+You can see the divergence by splitting up dR into dN x dx, where N is the surface element of the nodal surface and dx is the coordinate perpendicular to this surface.
+
+\begin{equation}
+\int dR \Psi^2 (E_L \frac{\partial_p \Psi}{\Psi})^2 \rightarrow \int dN \frac{(E_L(N) \partial_p \Psi(N))^2}{|\nabla\Psi(N)|^2} \int dx \frac{1}{x^2} 
+\end{equation}
+which clearly diverges.
+
+\section{Stage 1}
+The first fix is to remove the divergence without any concern about biases. We can do this by just cutting off evaluation below some radius $\epsilon$.
+Since the first term in equation 2 has a non-zero expectation value, this will lead to an $O(\epsilon)$ bias to the evaluation, which is a problem!
+
+\section{Stage 2}
+We would prefer a method which has zero bias to at least $O(\epsilon^2)$ while still ensuring a finite variance.
+
+\subsection{Zero bias}
+Let's consider a general argument for an unbaised estimator of the first term
+\begin{equation}
+\int dR \Psi^2 \frac{H\Psi}{\Psi} \frac{\partial_p\Psi}{\Psi} (f(R) - 1)
+\end{equation}
+
+
+To ensure we have zero bias we can tune the constant $C$. The bias takes the form of an integral near the node.
+$$\int dN \int_{-\epsilon}^{\epsilon} dx \Psi^2 (E_L \frac{\partial_p \Psi}{\Psi} - C x^{-n/3})$$
+Taking a Taylor expansion, we find that $\Psi(N+x) \sim |\nabla\Psi(N)|x + O(x^2)$, $E_L = \frac{H\Psi(N)}{|\nabla \Psi(N)|x} + O(x^0)$,
+$\frac{\partial_p\Psi}{\Psi} = \frac{\partial_p \Psi(N)}{|\nabla \Psi(N)|x} + O(x^0)$.
+The integral, to lowest order in $x$, assuming $n > 3$
+$$\int dN \int_{-\epsilon}^{\epsilon} dx H\Psi(N) \partial_p \Psi(N) - C|\nabla \Psi(N)|^2 x^2 x^{-n/3}) + O(x)$$
+
+The integral $\int_{-\epsilon}^{\epsilon} x^{2 - \frac{n}{3}}$ only gives a nonzero value if $9 - n$ is odd, which implies $n = 4, 6, 8, ...$ will apply here.
+For such values, we find that the integral becomes $\int_{-\epsilon}^{\epsilon} x^{2 - \frac{n}{3}} = \frac{2}{3 - \frac{n}{3}} \epsilon ^{3 - \frac{n}{3}}$. We then find 
+
+\begin{equation}
+C = \frac{H\Psi(N) \partial_p\Psi(N)}{|\nabla \Psi(N)|^2}\epsilon^{\frac{n}{3} - 2}(3 - \frac{n}{3})
+\end{equation}
+This will lead to an estimator where the bias increases $O(\epsilon^3)$. 
+
+\subsection{Tunable variance}
+We can take a look at the variance of using this estimator near the nodes.
+The variance takes the form of an integral (dropping useless constants): 
+
+\begin{equation}
+\int_{-\epsilon}^{\epsilon} dx \epsilon^{\frac{2n}{3} - 4}x^2 x^\frac{-2n}{3}  \sim \epsilon^{\frac{2n}{3} - 4} \epsilon^{3 - \frac{2n}{3}} \sim \epsilon^{-1}
+\end{equation} 
+
+We have here an unbiased estimator as long as we are in the linear regime which has a tunable variance that increases with $\epsilon$, which is pretty useful! But we would prefer the variance to not increase so drastically, and maybe also if the estimator was smooth at the cutoff.
+
+\end{document}

@@ -24,12 +24,12 @@ pgrad = PGradTransform(eacc, transform, nodal_cutoff = cutoff)
 
 #Initial run
 configs = pyqmc.initial_guess(mol, nconf).configs[:,:,:]
-configs[:,0,:] = [[0,0,0.1]]
 
 full_df = None
 e = 0 #electron
 dim = 1 #Coordinate to vary
-for i in np.linspace(0, 2, 1000):
+configs[:,e,:] = [[0,0,0.75]] #Start at center of molecule
+for i in np.linspace(-2, 2, 100):
   new_configs = copy.deepcopy(configs)
   new_configs[:,e,dim] += i
   shifted_configs = OpenConfigs(new_configs)
@@ -37,13 +37,14 @@ for i in np.linspace(0, 2, 1000):
   d = pgrad(shifted_configs, wf)
 
   small_df = pd.DataFrame({
+    'ke':[d['ke'][0]],
     'total':[d['total'][0]],
-    'dppsi':[d['dppsi'][0]],
-    'dpH'  :[d['dpH'][0]],
+    'dppsi':[d['dppsi'][0][0]],
+    'dpH'  :[d['dpH'][0][0]],
     'wfval':[wfval[0][0]*np.exp(wfval[1][0])],
-    'zcoord': i + 0.1,
+    'ycoord': i,
     'configs':[copy.deepcopy(new_configs)],
   })
   if(full_df is None): full_df = small_df
   else: full_df = pd.concat((full_df, small_df), axis=0)
-  full_df.to_pickle('test_old.pickle')
+  full_df.to_pickle('findanode.pickle')
