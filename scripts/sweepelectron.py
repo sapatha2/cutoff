@@ -47,4 +47,4 @@ for i in np.linspace(-2, 2, 100):
   })
   if(full_df is None): full_df = small_df
   else: full_df = pd.concat((full_df, small_df), axis=0)
-  full_df.to_pickle('findanode.pickle')
+  full_df.to_pickle('sweepelectron.pickle')
