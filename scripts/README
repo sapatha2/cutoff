@@ -1,0 +1,12 @@
+Analysis files, do as follows:
+
+1. sweepelectron.py
+   sweeps an electron across the system, first point in finding anode 
+2. locatenode.py
+   locate a node using a guess starting point
+3. viznode.py
+   visualization of functions across a path normal to the node 
+4. integratecutoff.py
+   integrate the functions across the node
+5. biasvariance.py
+   plot the bias variance tradeoff in the system
