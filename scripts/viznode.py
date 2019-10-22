@@ -90,16 +90,17 @@ def integratenode(node_coords, node_grad, cutoffs, vizfile='integratenode.pdf', 
   #Fit theory curves and visualize
   ind = np.argsort(df['cutoff'])
 
-  fig, ax = plt.subplots(nrows = 2, ncols = 1, figsize = (3,6), sharex=True)
+  fig, ax = plt.subplots(nrows = 1, ncols = 2, figsize = (6,3))
   x = df['cutoff'].iloc[ind]
   y = df['bias'].iloc[ind]/scalebias
   p = polynomial.polyfit(x[x>poly], y[x>poly], [3,0])
   xfit = np.linspace(min(x[x>poly]), max(x), 1000)
   fit = p[0] + p[3] * xfit ** 3
-  ax[0].plot(np.log10(x), y, 'o')
-  ax[0].plot(np.log10(xfit), fit, '--')
+  ax[0].plot(x, y, 'o')
+  ax[0].plot(xfit, fit, '--')
   ax[0].set_ylabel(r'Bias/$10^{-12}$')
-
+  ax[0].set_xlabel(r'$\epsilon$')
+  
   x = np.log10(df['cutoff'].iloc[ind])
   y = np.log10(df['variance'].iloc[ind])
   poly = np.log10(poly)
