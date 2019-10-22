@@ -72,7 +72,7 @@ def wavefunction():
     freeze = {'wf1det_coeff': np.ones(freeze['wf1det_coeff'].shape).astype(bool)}
     freeze['wf1det_coeff'][-1] = False
 
-    return wf, to_opt, freeze
+    return mol, wf, to_opt, freeze
 
 if __name__=='__main__':       
     test_basis()
