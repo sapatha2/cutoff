@@ -31,11 +31,19 @@ for i in range(1,100):
 
 data = np.log10(np.abs(dpH_total))
 
-hist, bin_edges = np.histogram(data, bins = 500, weights = weight, density = True)
+hist, bin_edges = np.histogram(data, bins = 100, weights = weight_total, density = True)
 plt.plot(bin_edges[:-1], np.log10(hist), 'k.')
 plt.plot(bin_edges[1:], np.log10(hist), 'k.')
 
-kde = stats.gaussian_kde(data, weights = weight)
+x = bin_edges[:-1][(bin_edges[:-1] > 5)*(bin_edges[:-1] < 10)]
+y = np.log10(hist)[(bin_edges[:-1] > 5)*(bin_edges[:-1] < 10)]
+p = np.polyfit(x, y, 1)
+print(p)
+plt.plot(bin_edges[:-1], p[0]*bin_edges[:-1] + p[1], 'r-')
+
+'''
+kde = stats.gaussian_kde(data, weights = weight_total)
 x = np.linspace(min(data), max(data), 500)
 plt.plot(x, np.log10(kde(x)), 'm-')
-plt.show()
+'''
+plt.savefig('test.pdf',bbox_inches='tight')
