@@ -9,28 +9,28 @@ import copy
 from scipy.optimize import minimize 
 
 df = pd.read_pickle('sweepelectron.pickle')
+#Found a node at ycoord ~ 1.5
+#Let's find the direction perpendicular to it!
+ind = np.argsort(-df['dpH'].values)
+node_coords_0 = df.iloc[ind[0]]['configs'] #Pretty close!
+
 '''
 #Locate a node in the wave function 
-plt.plot(df['ycoord'], df['total'], 'o')
+plt.plot(df['ycoord'], df['wfval'], 'o')
+plt.plot(df['ycoord'].iloc[ind[0]], df['wfval'].iloc[ind[0]], 'o')
 plt.show()
 
 plt.plot(df['ycoord'], df['dpH'], 'o')
+plt.plot(df['ycoord'].iloc[ind[0]], df['dpH'].iloc[ind[0]], 'o')
 plt.show()
-
-plt.plot(df['ycoord'], df['dppsi'], 'o')
-plt.show()
+exit(0)
 '''
 
-#Found a node at ycoord ~ 1.5
-#Let's find the direction perpendicular to it!
-distances = []
-ind = np.argsort(-df['dpH'].values)
-node_coords_0 = df.iloc[ind[0]]['configs'] #Pretty close!
 
 #Now let's move towards the node as close as possible 
 mol = gto.M(atom="Li 0. 0. 0.; H 0. 0. 1.5", basis="cc-pvtz", unit="bohr", spin=0)
 mf = scf.RHF(mol).run()
-mc = mcscf.CASCI(mf,ncas=4,nelecas=(2,0))
+mc = mcscf.CASCI(mf,ncas=4,nelecas=(1,1))
 mc.kernel()
 wf, to_opt, freeze = pyqmc.default_multislater(mol, mf, mc) 
 
@@ -49,7 +49,7 @@ def wfgrad(coords, wf, mol):
 def wvfal(x, wf, gradient):
     node_coords = OpenConfigs(node_coords_0 + gradient * x)
     val = wf.recompute(node_coords)
-    return np.exp(2 * val[1])/1e-20 #Scaling for minimization 
+    return np.exp(2 * val[1])/1e-24 #Scaling for minimization 
 
 #Minimize function 
 val_0 = wf.recompute(OpenConfigs(node_coords_0))

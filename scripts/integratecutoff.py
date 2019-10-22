@@ -38,7 +38,7 @@ def norm(x, node_coords, gradient):
 if __name__ == '__main__':
   mol = gto.M(atom="Li 0. 0. 0.; H 0. 0. 1.5", basis="cc-pvtz", unit="bohr", spin=0)
   mf = scf.RHF(mol).run()
-  mc = mcscf.CASCI(mf,ncas=4,nelecas=(2,0))
+  mc = mcscf.CASCI(mf,ncas=4,nelecas=(1,1))
   mc.kernel()
   wf, to_opt, freeze = pyqmc.default_multislater(mol, mf, mc) 
 
@@ -54,9 +54,9 @@ if __name__ == '__main__':
   cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075])
   for cutoff in cutoffs:
     pgrad = PGradTransform(eacc, transform, nodal_cutoff = cutoff)
-    bias = integrate.quad(lambda x: dpH(x, pgrad, pgrad_bare, node_coords, gradient), -cutoff, cutoff, epsabs = 1e-11, epsrel = 1e-11)
-    variance = integrate.quad(lambda x: dpH2(x, pgrad, node_coords, gradient),  -cutoff, cutoff, epsabs = 1e-11, epsrel = 1e-11)
-    normalization = integrate.quad(lambda x: norm(x, node_coords, gradient), -cutoff, cutoff, epsabs = 1e-11, epsrel = 1e-11)
+    bias = integrate.quad(lambda x: dpH(x, pgrad, pgrad_bare, node_coords, gradient), -cutoff, cutoff, epsabs = 1e-15, epsrel = 1e-15)
+    variance = integrate.quad(lambda x: dpH2(x, pgrad, node_coords, gradient),  -cutoff, cutoff, epsabs = 1e-15, epsrel = 1e-15)
+    normalization = integrate.quad(lambda x: norm(x, node_coords, gradient), -cutoff, cutoff, epsabs = 1e-15, epsrel = 1e-15)
     biases.append(bias[0])
     variances.append(variance[0])
     normalizations.append(normalization[0])

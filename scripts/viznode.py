@@ -38,7 +38,7 @@ def norm(x, node_coords, gradient):
 if __name__ == '__main__':
   mol = gto.M(atom="Li 0. 0. 0.; H 0. 0. 1.5", basis="cc-pvtz", unit="bohr", spin=0)
   mf = scf.RHF(mol).run()
-  mc = mcscf.CASCI(mf,ncas=4,nelecas=(2,0))
+  mc = mcscf.CASCI(mf,ncas=4,nelecas=(1,1))
   mc.kernel()
   wf, to_opt, freeze = pyqmc.default_multislater(mol, mf, mc) 
 

@@ -14,7 +14,7 @@ cutoff = 0
 
 mol = gto.M(atom="Li 0. 0. 0.; H 0. 0. 1.5", basis="cc-pvtz", unit="bohr", spin=0)
 mf = scf.RHF(mol).run()
-mc = mcscf.CASCI(mf,ncas=4,nelecas=(2,0))
+mc = mcscf.CASCI(mf,ncas=4,nelecas=(1,1))
 mc.kernel()
 wf, to_opt, freeze = pyqmc.default_multislater(mol, mf, mc)
 
@@ -39,8 +39,8 @@ for i in np.linspace(-2, 2, 100):
   small_df = pd.DataFrame({
     'ke':[d['ke'][0]],
     'total':[d['total'][0]],
-    'dppsi':[d['dppsi'][0][0]],
-    'dpH'  :[d['dpH'][0][0]],
+    'dppsi':[d['dppsi'][0][-1]],
+    'dpH'  :[d['dpH'][0][-1]],
     'wfval':[wfval[0][0]*np.exp(wfval[1][0])],
     'ycoord': i,
     'configs':[copy.deepcopy(new_configs)],
