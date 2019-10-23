@@ -83,7 +83,6 @@ def locatenode(df, scale):
     grad = []
     for e in range(nelec):
       node_grad = wf.gradient(e, coords.electron(e)) * np.exp(val[1]) * val[0]
-      #node_grad /= (np.linalg.norm(node_grad) * np.sqrt(nelec))
       grad.append(node_grad)
     grad = np.array(grad)
     grad /= np.linalg.norm(grad.ravel())
