@@ -142,8 +142,8 @@ def plot_configs(df, cutoffs):
     plt.plot(list(bin_edges[:-1]) + list(bin_edges[1:]), list(hist) + list(hist), '.', label = str(cutoff))
   plt.plot(list(bin_edges[:-1]) + list(bin_edges[1:]), np.array(list(-bin_edges[:-1]) + list(-bin_edges[1:])) -4.2, 'k--')
   plt.legend(loc='best')
+  plt.savefig('histogram.pdf', bbox_inches='tight')
   plt.close()
-  #plt.show()
 
   #KDE
   for cutoff in cutoffs:
@@ -160,7 +160,7 @@ def plot_configs(df, cutoffs):
     plt.plot(x, y, '.', label = str(cutoff))
     plt.plot(x, -1.5*x - 5, 'k--')
   plt.legend(loc='best')
-  plt.show()
+  plt.savefig('collapse.pdf', bbox_inches='tight')
 
 if __name__ == '__main__':
   n = 200
