@@ -101,7 +101,7 @@ def integratenode(node_coords, node_grad, cutoffs, vizfile='integratenode.pdf', 
   fit = p[0] + p[3] * xfit ** 3
   ax[0].errorbar(x, y, yerr = df['bias_err'].iloc[ind]/scalebias, fmt = 'o')
   ax[0].plot(xfit, fit, '--')
-  ax[0].set_ylabel(r'Bias/$10^{-12}$')
+  ax[0].set_ylabel(r'Bias/$10^{'+str(np.log10(scalebias))+'}$')
   ax[0].set_xlabel(r'$\epsilon$')
   
   x = np.log10(df['cutoff'].iloc[ind])
