@@ -126,4 +126,4 @@ if __name__ == '__main__':
   viznode(node_coords, node_grad, cutoffs)
 
   """Integrate across the node"""
-  integratenode(node_coords, node_grad, cutoffs, poly=1e-3, scalebias = 1e-16) 
+  integratenode(node_coords, node_grad, cutoffs, poly=1e-2) 
