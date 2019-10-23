@@ -32,10 +32,10 @@ class PGradTransform_new:
         
         node_cut, r2 = self._node_cut(configs, wf)
         
-        c = 7./(self.nodal_cutoff**6)
-        b = (-1. -2.*c*self.nodal_cutoff**6)/self.nodal_cutoff**4
-        a = (-2*b*self.nodal_cutoff**2 - 3*c*self.nodal_cutoff**4)
-        
+        c = 7./(self.nodal_cutoff ** 6)
+        b = -15./(self.nodal_cutoff ** 4)
+        a = 9./(self.nodal_cutoff ** 2)
+
         l2 = r2[node_cut, np.newaxis]
         d["dpH"][node_cut, :] *= a * l2 + b * l2**2 + c * l2**3
         return d
