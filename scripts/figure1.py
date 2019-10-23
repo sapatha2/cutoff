@@ -70,7 +70,7 @@ def locatenode(df, scale):
   so that minimization algorithm can converge
   """
 
-  from scipy.optimize import minimize
+  from scipy.optimize import minimize_scalar
   mol, wf, to_opt, freeze = wavefunction() 
   
   ind = np.argsort(-df['dpH'].values)
@@ -79,12 +79,14 @@ def locatenode(df, scale):
   #Get the gradient
   def wfgrad(coords, wf, mol):
     nelec = mol.nelec[0] + mol.nelec[1]
+    val = wf.recompute(coords)
     grad = []
     for e in range(nelec):
-      node_grad = wf.gradient(e, coords.electron(e))
-      node_grad /= (np.linalg.norm(node_grad) * np.sqrt(nelec))
+      node_grad = wf.gradient(e, coords.electron(e)) * np.exp(val[1]) * val[0]
+      #node_grad /= (np.linalg.norm(node_grad) * np.sqrt(nelec))
       grad.append(node_grad)
     grad = np.array(grad)
+    grad /= np.linalg.norm(grad.ravel())
     return np.rollaxis(grad, -1) 
 
   #Value function along that gradient
@@ -94,16 +96,18 @@ def locatenode(df, scale):
       return np.exp(2 * val[1])/scale #Scaling for minimization 
 
   #Minimize function 
-  val_0 = wf.recompute(OpenConfigs(node_coords_0))
-  grad_0 = wfgrad(OpenConfigs(node_coords_0), wf, mol)
-  res = minimize(lambda x: wvfal(x, wf, grad_0), 0)
-  print("x: ",res.x)
+  node_coords = node_coords_0
 
-  #Upgrade gradient
-  node_coords = node_coords_0 + grad_0 * res.x[0]
-  val = wf.recompute(OpenConfigs(node_coords))
-  grad = wfgrad(OpenConfigs(node_coords), wf, mol)
-  print("Pre wfval: ",np.exp(2*val_0[1]), "Post wfval: ",np.exp(2*val[1]))
+  for i in range(1):
+    val = wf.recompute(OpenConfigs(node_coords))
+    grad = wfgrad(OpenConfigs(node_coords), wf, mol)
+    print("Wfval: ", np.exp(val[1])*val[0])
+
+    res = minimize_scalar(lambda x: wvfal(x, wf, grad), bracket = [-0.1, 0.1], tol = 1e-16)
+    print("x: ",res.x)
+
+    #Upgrade gradient
+    node_coords += grad * res.x[0]
 
   return node_coords, grad
 
@@ -116,7 +120,7 @@ if __name__ == '__main__':
 
   """Pinpoint the location of the node"""
   sweepdf = pd.read_json('sweepelectron.json')
-  node_coords, node_grad = locatenode(sweepdf, scale = 1e-24)
+  node_coords, node_grad = locatenode(sweepdf, scale = 1e-50)
 
   """Visualize the node"""
   cutoffs = [1e-8, 1e-5, 1e-3, 1e-2, 1e-1]

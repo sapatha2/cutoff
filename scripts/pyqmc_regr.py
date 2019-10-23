@@ -1,7 +1,7 @@
 import numpy as np
 from pyqmc.energy import energy
 
-class PGradTransform:
+class PGradTransform_new:
     """   """
 
     def __init__(self, enacc, transform, nodal_cutoff=1e-5):

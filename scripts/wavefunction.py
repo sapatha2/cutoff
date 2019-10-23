@@ -55,7 +55,7 @@ def wavefunction():
     multiplied by a Jastrow with cusp conditions applied 
     """
 
-    from pyqmc import default_msj
+    from pyqmc import default_msj, default_multislater
     mol = gto.M(atom="Li 0. 0. 0.; H 0. 0. 3.015", basis='cc-pvqz', unit="bohr", spin=0)
     mf = scf.ROHF(mol).run()
     mc = mcscf.CASCI(mf,ncas=6,nelecas=(2,2))
