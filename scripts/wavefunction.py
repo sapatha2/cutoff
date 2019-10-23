@@ -49,7 +49,7 @@ def test_ci():
     mc = mcscf.CASCI(mf,ncas=6,nelecas=(2,2))
     mc.kernel()
 
-def wavefunction():
+def wavefunction(return_mf = False):
     """
     Returns Full CI wave function 
     multiplied by a Jastrow with cusp conditions applied 
@@ -72,7 +72,8 @@ def wavefunction():
     freeze = {'wf1det_coeff': np.ones(freeze['wf1det_coeff'].shape).astype(bool)}
     freeze['wf1det_coeff'][-1] = False
 
-    return mol, wf, to_opt, freeze
+    if(return_mf): return mol, mf, mc, wf, to_opt, freeze
+    else: return mol, wf, to_opt, freeze
 
 if __name__=='__main__':       
     test_basis()
