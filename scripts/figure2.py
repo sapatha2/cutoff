@@ -140,7 +140,7 @@ def plot_configs(df, cutoffs):
     hist = df['hist'+str(cutoff)][:-1]
     bin_edges = df['bins'+str(cutoff)]
     plt.plot(list(bin_edges[:-1]) + list(bin_edges[1:]), list(hist) + list(hist), '.', label = str(cutoff))
-  plt.plot(list(bin_edges[:-1]) + list(bin_edges[1:]), np.array(list(-bin_edges[:-1]) + list(-bin_edges[1:])) -4.2, 'k--')
+  plt.plot(list(bin_edges[:-1]) + list(bin_edges[1:]), -1.5*np.array(list(bin_edges[:-1]) + list(bin_edges[1:])) -4.2, 'k--')
   plt.legend(loc='best')
   plt.savefig('histogram.pdf', bbox_inches='tight')
   plt.close()
