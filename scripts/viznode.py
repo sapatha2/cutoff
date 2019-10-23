@@ -96,6 +96,7 @@ def integratenode(node_coords, node_grad, cutoffs, vizfile='integratenode.pdf', 
   x = df['cutoff'].iloc[ind]
   y = df['bias'].iloc[ind]/scalebias
   p = polynomial.polyfit(x[x>poly], y[x>poly], [3,0])
+  print("Fit for bias ", p)
   xfit = np.linspace(min(x[x>poly]), max(x), 1000)
   fit = p[0] + p[3] * xfit ** 3
   ax[0].errorbar(x, y, yerr = df['bias_err'].iloc[ind]/scalebias, fmt = 'o')
@@ -107,6 +108,7 @@ def integratenode(node_coords, node_grad, cutoffs, vizfile='integratenode.pdf', 
   y = np.log10(df['variance'].iloc[ind])
   poly = np.log10(poly)
   p = polynomial.polyfit(x[x<=poly], y[x<=poly], 1)
+  print("Fit for variance ", p)
   xfit = np.logspace(min(x),max(x[x<=poly]), 1000)
   fit = p[0] + p[1] * np.log10(xfit)
   ax[1].plot(x, y, 'o')
