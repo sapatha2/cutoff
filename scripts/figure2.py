@@ -158,6 +158,7 @@ def plot_configs(df, cutoffs):
     y /= cutoff ** 3
     y = np.log10(y)
     plt.plot(x, y, '.', label = str(cutoff))
+    plt.plot(x, -1.5*x - 5, 'k--')
   plt.legend(loc='best')
   plt.show()
 
