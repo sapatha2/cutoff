@@ -102,7 +102,7 @@ def collectconfigs(n, dump_file):
     df.to_json(dump_file)
   return df 
 
-def plot_configs(data, cutoffs):
+def eval_configs(data, cutoffs):
   """
   Plot distribution of collected configurations
   """
@@ -115,21 +115,49 @@ def plot_configs(data, cutoffs):
   r2 = data['distance_squared']
   weight = data['weight_total']
 
+  d = {}
   for cutoff in list(cutoffs): 
       node_cut = r2 < cutoff ** 2
       print(cutoff, node_cut.sum())
       
-      c = 7./(self.nodal_cutoff ** 6)
-      b = -15./(self.nodal_cutoff ** 4)
-      a = 9./(self.nodal_cutoff ** 2)
+      c = 7./(cutoff ** 6)
+      b = -15./(cutoff ** 4)
+      a = 9./(cutoff ** 2)
 
       l2 = r2[node_cut]
       dpH = np.copy(data['dpH'])
       dpH[node_cut] *= a * l2 + b * l2**2 + c * l2**3
 
-      hist, bin_edges = np.histogram(np.log10(np.abs(dpH[dpH>0])), bins = 200, density = True, weights = weight[dpH>0])
-      plt.plot(list(bin_edges[:-1]) + list(bin_edges[1:]), np.log10(list(hist) + list(hist)), '.', label = str(cutoff))
-      if(cutoff == 1e-8): plt.plot(list(bin_edges[:-1]) + list(bin_edges[1:]), list(-1*bin_edges[:-1]) + list(-1*bin_edges[1:]), 'k--')
+      hist, bin_edges = np.histogram(np.log10(np.abs(dpH)[np.abs(dpH)>0]), bins = 200, density = True, weights = weight[np.abs(dpH)>0])
+      d['hist'+str(cutoff)] = list(np.log10(hist)) + [None]
+      d['bins'+str(cutoff)] = bin_edges
+  df = pd.DataFrame(d)
+  df.to_json('histogram.json')
+
+def plot_configs(df, cutoffs):
+  #Raw histogram
+  for cutoff in cutoffs:
+    hist = df['hist'+str(cutoff)][:-1]
+    bin_edges = df['bins'+str(cutoff)]
+    plt.plot(list(bin_edges[:-1]) + list(bin_edges[1:]), list(hist) + list(hist), '.', label = str(cutoff))
+  plt.plot(list(bin_edges[:-1]) + list(bin_edges[1:]), np.array(list(-bin_edges[:-1]) + list(-bin_edges[1:])) -4.2, 'k--')
+  plt.legend(loc='best')
+  plt.close()
+  #plt.show()
+
+  #KDE
+  for cutoff in cutoffs:
+    hist = df['hist'+str(cutoff)][:-1]
+    bin_edges = df['bins'+str(cutoff)]
+    x = np.array(list(bin_edges[:-1]) + list(bin_edges[1:]))
+    x = 10.**x
+    x /= cutoff ** -2
+    x = np.log10(x)
+    y = np.array(list(hist) + list(hist))
+    y = 10.**y 
+    y /= cutoff ** 3
+    y = np.log10(y)
+    plt.plot(x, y, '.', label = str(cutoff))
   plt.legend(loc='best')
   plt.show()
 
@@ -140,6 +168,9 @@ if __name__ == '__main__':
   #df = collectconfigs(n,'vmc/collected.json')
 
   #Needs to be rerun for plotting
-  cutoffs = [1e-8, 1e-5, 1e-3, 1e-2, 1e-1]
-  data = pd.read_json('vmc/collected.json')
-  plot_configs(data, cutoffs)
+  #cutoffs = [1e-8, 1e-5, 1e-3, 1e-2, 1e-1]
+  #data = pd.read_json('vmc/collected.json')
+  #eval_configs(data, cutoffs)
+
+  cutoffs = [1e-5, 1e-3, 1e-2, 1e-1]
+  plot_configs(pd.read_json('histogram.json'), cutoffs)
