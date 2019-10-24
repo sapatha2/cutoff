@@ -140,14 +140,13 @@ def plot_configs(df, cutoffs):
     hist = df['hist'+str(cutoff)][:-1]
     bin_edges = df['bins'+str(cutoff)]
     plt.plot(list(bin_edges[:-1]) + list(bin_edges[1:]), list(hist) + list(hist), '.', label = str(cutoff))
-  plt.plot(list(bin_edges[:-1]) + list(bin_edges[1:]), -1.5*np.array(list(bin_edges[:-1]) + list(bin_edges[1:])) -4.2, 'k--')
-  plt.xlabel(r'$\frac{H\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon (R)$')
-  plt.ylabel('P')
+  plt.xlabel(r'$\log(\frac{H\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon (R))$')
+  plt.ylabel(r'$\log(P)$')
   plt.legend(loc='best', title = r'$\epsilon$')
   plt.savefig('histogram.pdf', bbox_inches='tight')
   plt.close()
 
-  #scaling collapse
+  #scaling collapse (by hand)
   for cutoff in cutoffs:
     hist = df['hist'+str(cutoff)][:-1]
     bin_edges = df['bins'+str(cutoff)]
@@ -160,10 +159,12 @@ def plot_configs(df, cutoffs):
     y /= cutoff ** 3
     y = np.log10(y)
     plt.plot(x, y, '.', label = str(cutoff))
-    plt.plot(x, -1.5*x - 5, 'k--')
-  plt.xlabel(r'$\epsilon^2 (\frac{H\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon (R))$')
-  plt.ylabel(r'P$\epsilon^{-3}$')
+  plt.plot(x*5, -1.5*x*5 - 4, 'k-', lw=1)
+  plt.text(0, -1, 'Slope -1.5')
+  plt.xlabel(r'$\log(\epsilon^2\frac{H\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon (R)))$')
+  plt.ylabel(r'$\log(P\epsilon^{-3})$')
   plt.xlim(-15, 10)
+  plt.ylim(-30, 20)
   plt.legend(loc='best', title = r'$\epsilon$')
   plt.savefig('collapse.pdf', bbox_inches='tight')
 
