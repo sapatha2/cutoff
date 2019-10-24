@@ -104,7 +104,8 @@ def collectconfigs(n, dump_file):
 
 def eval_configs(data, cutoffs):
   """
-  Plot distribution of collected configurations
+  Evaluate values using the 
+  regularization we have constructed
   """
   
   mol, wf, to_opt, freeze = wavefunction()
@@ -135,16 +136,22 @@ def eval_configs(data, cutoffs):
   df.to_json('histogram.json')
 
 def plot_configs(df, cutoffs):
+  """
+  Plot the histogram and empirical scaling collapse
+  to show the scaling relationship as epsilon -> 0
+  and how we address the problem!
+  """
+
+  fig, ax = plt.subplots(nrows = 2, ncols = 1, figsize = (4,8))
   #Raw histogram
   for cutoff in cutoffs:
     hist = df['hist'+str(cutoff)][:-1]
     bin_edges = df['bins'+str(cutoff)]
-    plt.plot(list(bin_edges[:-1]) + list(bin_edges[1:]), list(hist) + list(hist), '.', label = str(cutoff))
-  plt.xlabel(r'$\log(\frac{H\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon (R))$')
-  plt.ylabel(r'$\log(P)$')
-  plt.legend(loc='best', title = r'$\epsilon$')
-  plt.savefig('histogram.pdf', bbox_inches='tight')
-  plt.close()
+    ax[0].plot(list(bin_edges[:-1]) + list(bin_edges[1:]), list(hist) + list(hist), '.', label = r'$10^{'+str(int(np.log10(cutoff)))+'}$')
+  ax[0].set_ylim((-40, 7))
+  ax[0].set_xlabel(r'$\log_{10}(\frac{H\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon (R))$')
+  ax[0].set_ylabel(r'$\log_{10}(P)$')
+  ax[0].legend(loc='best', title = r'$\epsilon$')
 
   #scaling collapse (by hand)
   for cutoff in cutoffs:
@@ -158,14 +165,13 @@ def plot_configs(df, cutoffs):
     y = 10.**y 
     y /= cutoff ** 3
     y = np.log10(y)
-    plt.plot(x, y, '.', label = str(cutoff))
-  plt.plot(x*5, -1.5*x*5 - 4, 'k-', lw=1)
-  plt.text(0, -1, 'Slope -1.5')
-  plt.xlabel(r'$\log(\epsilon^2\frac{H\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon (R)))$')
-  plt.ylabel(r'$\log(P\epsilon^{-3})$')
-  plt.xlim(-15, 10)
-  plt.ylim(-30, 20)
-  plt.legend(loc='best', title = r'$\epsilon$')
+    ax[1].plot(x, y, '.')
+  ax[1].plot(x*5, -1.5*x*5 - 4, 'k-', lw=1)
+  ax[1].text(0, -1, 'Slope -1.5')
+  ax[1].set_xlabel(r'$\log_{10}(\epsilon^2\frac{H\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon (R)))$')
+  ax[1].set_ylabel(r'$\log_{10}(P\epsilon^{-3})$')
+  ax[1].set_xlim(-15, 10)
+  ax[1].set_ylim(-30, 20)
   plt.savefig('collapse.pdf', bbox_inches='tight')
 
 if __name__ == '__main__':

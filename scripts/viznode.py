@@ -46,15 +46,19 @@ def viznode(node_coords, node_grad, cutoffs, vizfile='viznode.pdf'):
   #Move across the node in this path
   val = wf.recompute(coord_path)
   fig, ax = plt.subplots(nrows = 2, ncols = 1, figsize = (3,6), sharex=True)
-  for k, cutoff in enumerate(cutoffs):
+  for k, cutoff in enumerate([1e-8]+cutoffs):
     pgrad = PGradTransform_new(eacc, transform, nodal_cutoff = cutoff)
     d = pgrad(coord_path, wf)
 
     total = d['total']
     dpH = np.array(d['dpH'])[:, -1]
 
-    ax[0].plot(x, np.sign(dpH) * np.log10(abs(dpH)), '-', label = str(cutoff))
-    ax[1].plot(x, np.log10(dpH**2 * (val[0]*np.exp(val[1]))**2), '-')
+    if(cutoff == 1e-8):
+      ax[0].plot(x, np.sign(dpH) * np.log10(abs(dpH)), 'k-', label = r'$10^{'+str(int(np.log10(cutoff)))+'}$')
+      ax[1].plot(x, np.log10(dpH**2 * (val[0]*np.exp(val[1]))**2), 'k-')
+    else:
+      ax[0].plot(x, np.sign(dpH) * np.log10(abs(dpH)), '-', label = r'$10^{'+str(int(np.log10(cutoff)))+'}$')
+      ax[1].plot(x, np.log10(dpH**2 * (val[0]*np.exp(val[1]))**2), '-')
 
   ax[0].set_ylabel(r'sgn$(\frac{H\Psi}{\Psi} \frac{\partial_p\Psi}{\Psi})$ x log$_{10}|\frac{H\Psi}{\Psi} \frac{\partial_p\Psi}{\Psi}|$')
   ax[1].set_ylabel(r'log$_{10}(|\frac{H\Psi}{\Psi} \frac{\partial_p\Psi}{\Psi}|^2 |\Psi|^2)$')
@@ -101,7 +105,7 @@ def integratenode(node_coords, node_grad, cutoffs, vizfile='integratenode.pdf', 
   fit = p[0] + p[3] * xfit ** 3
   ax[0].errorbar(x, y, yerr = df['bias_err'].iloc[ind]/scalebias, fmt = 'o')
   ax[0].plot(xfit, fit, '--')
-  ax[0].set_ylabel(r'Bias/$10^{'+str(np.log10(scalebias))+'}$')
+  ax[0].set_ylabel(r'Bias/$10^{'+str(int(np.log10(scalebias)))+'}$')
   ax[0].set_xlabel(r'$\epsilon$')
   
   x = np.log10(df['cutoff'].iloc[ind])

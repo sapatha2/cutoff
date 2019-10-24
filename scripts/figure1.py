@@ -122,7 +122,7 @@ if __name__ == '__main__':
   node_coords, node_grad = locatenode(sweepdf, scale = 1e-50)
 
   """Visualize the node"""
-  cutoffs = [1e-8, 1e-5, 1e-3, 1e-2, 1e-1]
+  cutoffs = [1e-5, 1e-3, 1e-2, 1e-1]
   viznode(node_coords, node_grad, cutoffs)
 
   """Integrate across the node"""
