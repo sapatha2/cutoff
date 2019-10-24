@@ -3,9 +3,9 @@ Title:   A light weight regularization for wave function parameter gradients in 
 Authors: Shivesh Pathak, Lucas K. Wagner
 \begin{document}
 \begin{abstract}
-The parameter derivative of the \textit{ab initio} energy functional is a key ingredient in quantum Monte Carlo (QMC) wave function optimization methods.
-A naive Monte Carlo estimate of this derivative, however, suffers from an infinite variance which inhibits the efficiency of optimization methods which rely on a stable estimate of the derivative.
-In this work we derive a simple polynomial regularization of the naive estimator which alleviates the problem of infinite variance at the cost of a cubic scaling bias.
-Being agnostic to wave function parameterization and applying equally to variational and diffusion Monte Carlo methods, the regularized estimator stands as a light weight approach to the infinite variance problem of the parameter derivative in QMC.
+The parameter derivative of the expectation value of the energy is a key ingredient in variational quantum Monte Carlo (VMC) wave function optimization methods.
+A naive Monte Carlo estimate of this derivative suffers from an infinite variance which inhibits the efficiency of optimization methods which rely on a stable estimate of the derivative.
+In this work we derive a simple regularization of the naive estimator which is easy to implement and has a neglible bias. 
+This regularization is trivial to implement in a standard VMC code without sampling complex distributions and it can be extrapolated to zero bias without extra computation.
 \end{abstract}
 \end{document}
