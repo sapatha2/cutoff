@@ -8,6 +8,12 @@ from pyqmc import MultiSlater
 from pyqmc.coord import OpenConfigs
 from pyqmc.accumulators import EnergyAccumulator, LinearTransform, PGradTransform
 
+def psi2(x, node_coords, gradient, wf):
+  """Wavefunction squared across the node"""
+  coords = OpenConfigs(gradient * x + node_coords)
+  val = wf.recompute(coords)
+  return np.exp(val[1] * 2)
+
 def dpH(x, pgrad, pgrad_bare, node_coords, gradient, wf):
   """Bias of dpH across a node"""
   coords = OpenConfigs(gradient * x + node_coords)
@@ -37,6 +43,7 @@ def viznode(node_coords, node_grad, cutoffs, vizfile='viznode.pdf'):
   #Generate the distances we want 
   x = np.arange(np.sqrt(2), 1001)
   x = 1./x**2
+  x = np.append(x, np.linspace(0.01, 0.12, 100))
   x = np.append(x, np.array([0] + [-y for y in x]))
   x = np.sort(x)
   
@@ -63,13 +70,13 @@ def viznode(node_coords, node_grad, cutoffs, vizfile='viznode.pdf'):
   ax[0].set_ylabel(r'sgn$(\frac{H\Psi}{\Psi} \frac{\partial_p\Psi}{\Psi})$ x log$_{10}|\frac{H\Psi}{\Psi} \frac{\partial_p\Psi}{\Psi}|$')
   ax[1].set_ylabel(r'log$_{10}(|\frac{H\Psi}{\Psi} \frac{\partial_p\Psi}{\Psi}|^2 |\Psi|^2)$')
   ax[1].set_xlabel('x (Bohr)')
-  ax[0].set_xlim((-max(cutoffs),max(cutoffs)))
-  ax[1].set_xlim((-max(cutoffs),max(cutoffs)))
+  ax[0].set_xlim((-max(cutoffs) - 0.02,max(cutoffs) + 0.02))
+  ax[1].set_xlim((-max(cutoffs) - 0.02,max(cutoffs) + 0.02))
   ax[0].legend(loc='best',title=r'$\epsilon$')
   plt.savefig(vizfile ,bbox_inches='tight')
   plt.close()
 
-def integratenode(node_coords, node_grad, cutoffs, vizfile='integratenode.pdf', scalebias = 1e-12, poly = 1e-2):
+def integratenode(node_coords, node_grad, vizfile='integratenode.pdf', integ_range = 1e-1, poly = 1e-2):
   from wavefunction import wavefunction 
   import scipy.integrate as integrate
   from numpy.polynomial import polynomial
@@ -84,28 +91,34 @@ def integratenode(node_coords, node_grad, cutoffs, vizfile='integratenode.pdf', 
   biases_err = []
   variances = []
   cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075])
+  normalization = integrate.quad(lambda x: psi2(x, node_coords, node_grad, wf), -integ_range, integ_range, epsabs = 1e-15, epsrel = 1e-15)
+  
   for cutoff in cutoffs:
+    print(cutoff)
     pgrad = PGradTransform_new(eacc, transform, nodal_cutoff = cutoff)
     bias = integrate.quad(lambda x: dpH(x, pgrad, pgrad_bare, node_coords, node_grad, wf), -cutoff, cutoff, epsabs = 1e-15, epsrel = 1e-15)
+    bias += integrate.quad(lambda x: dpH(x, pgrad, pgrad_bare, node_coords, node_grad, wf), -integ_range + cutoff, integ_range - cutoff, epsabs = 1e-15, epsrel = 1e-15)
     variance = integrate.quad(lambda x: dpH2(x, pgrad, node_coords, node_grad, wf),  -cutoff, cutoff, epsabs = 1e-15, epsrel = 1e-15)
-    biases.append(bias[0])
-    biases_err.append(bias[1])
-    variances.append(variance[0])
-  df = pd.DataFrame({'cutoff': cutoffs, 'bias': biases, 'bias_err': biases_err, 'variance': variances})
-
+    variance += integrate.quad(lambda x: dpH2(x, pgrad, node_coords, node_grad, wf),  -integ_range + cutoff, integ_range - cutoff, epsabs = 1e-15, epsrel = 1e-15)
+    biases.append(bias[0]/normalization[0])
+    variances.append(variance[0]/normalization[0])
+  df = pd.DataFrame({'cutoff': cutoffs, 'bias': biases, 'variance': variances})
+  df.to_json('integratenode.json')
+  
+  #df = pd.read_json('integratenode.json')
   #Fit theory curves and visualize
   ind = np.argsort(df['cutoff'])
 
   fig, ax = plt.subplots(nrows = 2, ncols = 1, figsize = (3,6))
   x = df['cutoff'].iloc[ind]
-  y = df['bias'].iloc[ind]/scalebias
+  y = df['bias'].iloc[ind]
   p = polynomial.polyfit(x[x>poly], y[x>poly], [3,0])
   print("Fit for bias ", p)
   xfit = np.linspace(min(x[x>poly]), max(x), 1000)
   fit = p[0] + p[3] * xfit ** 3
-  ax[0].errorbar(x, y, yerr = df['bias_err'].iloc[ind]/scalebias, fmt = 'o')
+  ax[0].plot(x, y, 'o')
   ax[0].plot(xfit, fit, '--')
-  ax[0].set_ylabel(r'Bias/$10^{'+str(int(np.log10(scalebias)))+'}$')
+  ax[0].set_ylabel(r'Bias')
   ax[0].set_xlabel(r'$\epsilon$')
   
   x = np.log10(df['cutoff'].iloc[ind])
