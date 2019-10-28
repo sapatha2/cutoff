@@ -87,11 +87,13 @@ def collectconfigs(n, dump_file):
 
     logweight = 2 * (wfval - wfpval)
     weight = np.exp(logweight)
+    print(i, weight[weight==0])
 
     dpH_total += list(dpH)
     weight_total += list(weight)
     logweight_total += list(logweight)
     distance_squared += list(r2)
+    print(i, np.array(weight_total)[np.array(weight_total)==0])
 
     df = pd.DataFrame({
       'dpH': dpH_total,
@@ -99,7 +101,7 @@ def collectconfigs(n, dump_file):
       'logweight_total': logweight_total,
       'distance_squared': distance_squared
       })
-    df.to_json(dump_file)
+    df.to_pickle(dump_file)
   return df 
 
 def eval_configs(data, cutoffs):
@@ -133,7 +135,7 @@ def eval_configs(data, cutoffs):
       d['hist'+str(cutoff)] = list(np.log10(hist)) + [None]
       d['bins'+str(cutoff)] = bin_edges
   df = pd.DataFrame(d)
-  df.to_json('histogram.json')
+  df.to_pickle('histogram.pickle')
 
 def plot_configs(df, cutoffs):
   """
@@ -178,12 +180,12 @@ if __name__ == '__main__':
   n = 200
   #Only needs to be run once!
   #genconfigs(n) 
-  #df = collectconfigs(n,'vmc/collected.json')
+  df = collectconfigs(n,'vmc/collected.pickle')
 
   #Needs to be rerun for plotting
-  #cutoffs = [1e-8, 1e-5, 1e-3, 1e-2, 1e-1]
-  #data = pd.read_json('vmc/collected.json')
-  #eval_configs(data, cutoffs)
+  cutoffs = [1e-8, 1e-5, 1e-3, 1e-2, 1e-1]
+  data = pd.read_json('vmc/collected.pickle')
+  eval_configs(data, cutoffs)
 
   cutoffs = [1e-5, 1e-3, 1e-2, 1e-1]
-  plot_configs(pd.read_json('histogram.json'), cutoffs)
+  plot_configs(pd.read_pickle('histogram.pickle'), cutoffs)
