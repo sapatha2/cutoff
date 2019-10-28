@@ -184,7 +184,7 @@ if __name__ == '__main__':
 
   #Needs to be rerun for plotting
   cutoffs = [1e-8, 1e-5, 1e-3, 1e-2, 1e-1]
-  data = pd.read_json('vmc/collected.pickle')
+  data = pd.read_pickle('vmc/collected.pickle')
   eval_configs(data, cutoffs)
 
   cutoffs = [1e-5, 1e-3, 1e-2, 1e-1]
