@@ -179,7 +179,7 @@ def plot_configs(df, cutoffs):
 if __name__ == '__main__':
   n = 200
   #Only needs to be run once!
-  #genconfigs(n) 
+  genconfigs(n) 
   df = collectconfigs(n,'vmc/collected.pickle')
 
   #Needs to be rerun for plotting
