@@ -2,58 +2,16 @@
 \usepackage{amsmath}
 \begin{document}
 \section{Introduction}
+%Nice first sentence: Low-variance MC estimates of the expectation value of the Hamiltonian and its parameter derivatives play an integral role in the efficiency of QMC wavefunction optimization techniques.
 \begin{enumerate}
-\item Overall goal
+\item \textbf{Overall goal } The development of efficient optimization schemes for correlated trial wave functions has been a long standing problem in quantum Monte Carlo (QMC) simulations of realistic systems.
 
-\item Barrier to achieving that goal 
+\item \textbf{Barrier to achieving that goal } A significant drain on the efficiency of these schemes is the infinite variance of a naive estimator for the parameter derivative of the expectation value of the energy.
 
-\item Current state of the art 
+\item \textbf{Current state of the art} The most widely accepted solutions to this infinite variance problem include Sorella's reweighting scheme [ref] and the improved estimators proposed by Assaraf and Caffarel [ref].
 
-\item Our advancement to the state of the art 
-
+\item \textbf{Our advancement to the state of the art } In this work, we derive a simple regularization of the naive estimator which handles the infinite variance problem without relying on auxiliary or guiding wave functions.
 \end{enumerate}
 
 \pagebreak
-Outlining 
-
-\begin{enumerate}
-\item What did we do? 
-\begin{itemize}
-\item Developed the theory for an unbiased, finite variance estimator for the quantity $\frac{\partial E}{\partial p}$.
-\item Developed a practical protocol for implementing this cutoff estimator and discussed the bias-variance trade-off inherent to the implementation.
-\item Demonstrated the benefits of using the cutoff estimator in optimization schemes for a simple system (CuO molecule?)
-\end{itemize} 
-\item Who would care about this paper?
-
-\begin{itemize}
-\item QMC optimization methods which rely on efficient, low-variance, evaluation of the energy parameter gradient will benefit from the cutoff estimator. 
-\item A specific case is the energy optimization scheme of Tolouse, Umrigar and the line minimization scheme that our group is using now.
-\end{itemize} 
-
-\item How do we exhibit the importance of the work? 
-\begin{itemize}
-\item Emphasize the importance of evaluating the parameter gradient $\frac{\partial E}{\partial p}$ accurately and efficiently in QMC.
-\begin{itemize}
-\item Useful in model fitting 
-\item Useful in energy optimization of many-body wave functions
-\end{itemize}
-\item Demonstrate the issue with using the naive MC estimator for the gradient.
-\begin{itemize}
-\item Divergences in the wave function gradient and local energy are present near the nodal surface of the wave function $\Psi$.
-\item This motivates us to break the integral needed to evaluate the energy gradient into an integral near the nodal surface and one away from it.
-\item The divergences present in the prior integral cancel to yield a finite result for  $\frac{\partial E}{\partial p}$ if evaluated exactly.
-\item When estimated over a finite set of MC samples, the naive MC estimator for the first integral has an infinite variance.
-\end{itemize}
-\item Express how the cutoff estimator fixes the issue.
-\begin{itemize}
-\item The cutoff estimator has an identical expected value when compared to the naive estimator but has a finite variance.
-\item In practice, a finite bias is incurred when reducing the variance of the estimator, however the bias can be controlled by the cutoff parameter.
-\end{itemize}
-\item Demonstrate the benefits of using the cutoff estimator in energy optimization.
-\begin{itemize}
-\item \textbf{Not super clear how to go about this, need to plan a bit more.}
-\end{itemize}
-\end{itemize} 
-\end{enumerate}
-
 \end{document}
