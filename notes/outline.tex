@@ -13,5 +13,24 @@
 \item \textbf{Our advancement to the state of the art } In this work, we derive a simple regularization of the naive estimator which handles the infinite variance problem without relying on auxiliary or guiding wave functions.
 \end{enumerate}
 
+\section{Regularized estimator}
+\begin{enumerate}
+\item The infinite variance of the naive Monte Carlo estimate of $\frac{\partial E}{\partial p}$ is caused by the divergence of the estimator near the nodes of $\Psi$.
+
+\item The variance can be made finite by regularizing the naive estimator within a distance $\epsilon$ from the nodes, while leaving it bare away from this region.
+
+\item An additional constraint on the regularization function allows us to tune the bias of the estimator to be negligible, precisely $O(\epsilon^3)$. 
+
+\item The final regularization function, which satisfies all of these constraints, takes a simple, even polynomial form.
+
+\item This regularized estimator serves as a lightweight, flexible alternative to the commonly used reweighting and improved estimator methods.
+
+\item A practical algorithm for using this regularized estimator follows three steps. 
+\end{enumerate}
+
+\section{Application to LiH molecule}
+
+\section{Conclusions}
+
 \pagebreak
 \end{document}
