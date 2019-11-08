@@ -113,9 +113,9 @@ def locatenode(df, scale):
 if __name__ == '__main__':
   """First sweep to make sure you have a potential node""" 
   #Run these first, once you hit a node DON'T run them again!
-  #sweepdf = sweepelectron()
-  #sweepdf.to_json('sweepelectron.json')
-  #vizsweep(sweepdf)
+  sweepdf = sweepelectron()
+  sweepdf.to_json('sweepelectron.json')
+  vizsweep(sweepdf)
 
   """Pinpoint the location of the node"""
   sweepdf = pd.read_json('sweepelectron.json')

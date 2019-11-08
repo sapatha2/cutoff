@@ -21,7 +21,7 @@
 
 \item An additional constraint on the regularization function allows us to tune the bias of the estimator to be negligible, precisely $O(\epsilon^3)$. 
 
-\item The final regularization function, which satisfies all of these constraints, takes a simple, even polynomial form.
+\item The final regularization function, which satisfies all of these constraints, takes a simple polynomial form.
 
 \item This regularized estimator serves as a lightweight, flexible alternative to the commonly used reweighting and improved estimator methods.
 
@@ -29,6 +29,17 @@
 \end{enumerate}
 
 \section{Application to LiH molecule}
+\begin{enumerate}
+\item We demonstrate the effectiveness of the regularized estimator on a multi-Slater Jastrow (MSJ) wave function for the LiH molecule.
+
+\item In Figure 1 we illustrate how the regularization counteracts divergences across a node in the LiH trial wave function.
+
+\item In Figure 2 we show the bias-variance tradeoff inherent to the regularization and their scaling with $\epsilon$.
+
+\item We also present the effect of the regularization on the distribution of $\frac{H\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi}$ for various $\epsilon$ in Figure 3.
+
+\item Finally, in Figure 4 we illustrate how the regularization can increase the efficiency of an optimization of the LiH MSJ trial wave function.
+\end{enumerate}
 
 \section{Conclusions}
 
