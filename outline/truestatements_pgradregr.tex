@@ -1,0 +1,69 @@
+\documentclass{article}
+\usepackage{amsmath}
+\begin{document}
+\begin{enumerate}
+\item The naive Monte Carlo estimator for $\frac{\partial E}{\partial p}$ has an infinite variance due to the $1/r^4$ divergence of $Q^2$ near the nodes of $\Psi$, where $Q \equiv \frac{H\Psi}{\Psi} \frac{\partial_p \Psi}{\Psi}$ and $r$ is the normal distance from the nodal surface.
+\begin{enumerate}
+\item \textbf{Evidence:} Proof, Citations, Figure: \textit{viznode.pdf}
+\end{enumerate}
+
+\item The finite mean and infinite variance of $Q$ indicate that the probability density $\rho(|Q|)$ has a power-law tail with exponent $1 < \tau < 2$.
+\begin{enumerate}
+\item \textbf{Evidence:} Proof, Figure: \textit{collapse.pdf}
+\end{enumerate}
+
+\item The infinite variance can be dealt with by using a regularized estimator $Q * f_\epsilon$ which has finite variance that scales as $O(\frac{1}{\epsilon})$ where 
+\[ f_\epsilon(r) = \begin{cases} 
+      O(\frac{r}{\epsilon}) & \frac{r}{\epsilon} < 1 \\
+      1 & \frac{r}{\epsilon} \ge 1 \\
+   \end{cases}
+\]
+\begin{enumerate}
+
+\item \textbf{Evidence:} Proof, Figure: \textit{integratenode.pdf}
+\end{enumerate}
+
+\item For a general function $f_\epsilon$ above, the regularized estimator $Q * f_\epsilon$ will have a linear-order bias in $\epsilon$, inhibiting extrapolation to zero bias.
+\begin{enumerate}
+\item \textbf{Evidence:} Proof
+\end{enumerate}
+
+\item A simple normalization condition on $f_\epsilon$ ensures a bias of $Q * f_\epsilon$ to $O(\epsilon^3)$, allowing for efficient extrapolation to zero bias.
+\begin{enumerate}
+\item \textbf{Evidence:} Proof, Figure: \textit{integratenode.pdf}
+\end{enumerate}
+
+\item The regularized estimator $Q * f_\epsilon$ yields a finite variance estimation of $\frac{\partial E}{\partial p}$ independent of wave function parameterization.
+\begin{enumerate}
+\item \textbf{Evidence:} Proof
+\end{enumerate}
+
+\item The application of the regularized estimator and extrapolation to zero bias adds a negligible cost to the VMC calculation of $\frac{\partial E}{\partial p}$.
+\begin{enumerate}
+\item \textbf{Evidence:} Proof from proposed algorithm
+\end{enumerate}
+
+\noindent\rule{\textwidth}{1pt}
+\item Commonly used VMC wave function optimization techniques rely on reliable Monte Carlo estimates of $\frac{\partial E}{\partial p}$ in evaluating wavefunction parameter updates.
+\begin{enumerate}
+\item \textbf{Evidence:} Citations - Sorella (SR), Umrigar (Linear, Newton)
+\end{enumerate}
+
+\item The infinite variance of the naive estimator of $\frac{\partial E}{\partial p}$ causes the estimated statistical error bar to be incorrect, rendering the estimation of the mean unreliable.
+\begin{enumerate}
+\item \textbf{Evidence:} Basic statistics
+\end{enumerate}
+
+\item The standard methods of dealing with this infinite variance employ guiding or auxiliary wave functions and yield zero bias estimations of $\frac{\partial E}{\partial p}$ with finite variance at a cost comparable to a bare VMC calculation.
+\begin{enumerate}
+\item \textbf{Evidence:} Citations - Assaraf and Caffarel, Sorella
+\end{enumerate}
+
+\item Finite variance cannot be achieved with arbitrary guiding functions, so significant effort must go into the construction of complicated guiding functions which exactly cancel unwanted divergences.
+\begin{enumerate}
+\item \textbf{Evidence:} Citations - Assaraf and Caffarel, Sorella
+\end{enumerate}
+
+
+\end{enumerate}
+\end{document}
