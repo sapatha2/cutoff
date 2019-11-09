@@ -91,8 +91,9 @@ def integratenode(node_coords, node_grad, vizfile='integratenode.pdf', integ_ran
   biases_err = []
   variances = []
   cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075])
+  '''
   normalization = integrate.quad(lambda x: psi2(x, node_coords, node_grad, wf), -integ_range, integ_range, epsabs = 1e-15, epsrel = 1e-15)
-  
+ 
   for cutoff in cutoffs:
     print(cutoff)
     pgrad = PGradTransform_new(eacc, transform, nodal_cutoff = cutoff)
@@ -104,17 +105,18 @@ def integratenode(node_coords, node_grad, vizfile='integratenode.pdf', integ_ran
     variances.append(variance[0]/normalization[0])
   df = pd.DataFrame({'cutoff': cutoffs, 'bias': biases, 'variance': variances})
   df.to_json('integratenode.json')
-  
-  #df = pd.read_json('integratenode.json')
+  '''
+
+  df = pd.read_json('integratenode.json')
   #Fit theory curves and visualize
   ind = np.argsort(df['cutoff'])
 
   fig, ax = plt.subplots(nrows = 2, ncols = 1, figsize = (3,6))
   x = df['cutoff'].iloc[ind]
   y = df['bias'].iloc[ind]
-  p = polynomial.polyfit(x[x>poly], y[x>poly], [3,0])
+  p = polynomial.polyfit(x, y, [3,0])
   print("Fit for bias ", p)
-  xfit = np.linspace(min(x[x>poly]), max(x), 1000)
+  xfit = np.linspace(min(x), max(x), 1000)
   fit = p[0] + p[3] * xfit ** 3
   ax[0].plot(x, y, 'o')
   ax[0].plot(xfit, fit, '--')
