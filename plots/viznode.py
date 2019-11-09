@@ -91,7 +91,6 @@ def integratenode(node_coords, node_grad, vizfile='integratenode.pdf', integ_ran
   biases_err = []
   variances = []
   cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075])
-  '''
   normalization = integrate.quad(lambda x: psi2(x, node_coords, node_grad, wf), -integ_range, integ_range, epsabs = 1e-15, epsrel = 1e-15)
  
   for cutoff in cutoffs:
@@ -105,7 +104,6 @@ def integratenode(node_coords, node_grad, vizfile='integratenode.pdf', integ_ran
     variances.append(variance[0]/normalization[0])
   df = pd.DataFrame({'cutoff': cutoffs, 'bias': biases, 'variance': variances})
   df.to_json('integratenode.json')
-  '''
 
   df = pd.read_json('integratenode.json')
   #Fit theory curves and visualize
