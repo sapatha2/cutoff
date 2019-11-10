@@ -2,46 +2,50 @@
 \usepackage{amsmath}
 \begin{document}
 \section{Introduction}
-%Nice first sentence: Low-variance MC estimates of the expectation value of the Hamiltonian and its parameter derivatives play an integral role in the efficiency of QMC wavefunction optimization techniques.
 \begin{enumerate}
-\item \textbf{Overall goal } The development of efficient optimization schemes for correlated trial wave functions has been a long standing problem in quantum Monte Carlo (QMC) simulations of realistic systems.
+\item \textbf{Overall goal } The development of reliable optimization schemes for correlated trial wave functions has been a long standing problem in quantum Monte Carlo (QMC) simulations of realistic systems.
 
-\item \textbf{Barrier to achieving that goal } A significant drain on the efficiency of these schemes is the infinite variance of a naive estimator for the parameter derivative of the expectation value of the energy.
+\item \textbf{Barrier to achieving that goal } Integral to the reliability of energy optimization schemes is the accurate, finite variance estimation of $\frac{\partial E}{\partial p}$.
 
-\item \textbf{Current state of the art} The most widely accepted solutions to this infinite variance problem include Sorella's reweighting scheme [ref] and the improved estimators proposed by Assaraf and Caffarel [ref].
+\item \textbf{Current state of the art} Widely accepted estimation techniques involve guiding or auxiliary wave functions, such as Sorella's reweighting scheme [ref] and the improved estimators of Assaraf and Caffarel [ref].
 
-\item \textbf{Our advancement to the state of the art } In this work, we derive a simple regularization of the naive estimator which handles the infinite variance problem without relying on auxiliary or guiding wave functions.
+\item \textbf{Our advancement to the state of the art } In this work, we derive and test a simple regularized estimator for $\frac{\partial E}{\partial p}$ which has finite variance, can be extrapolated to zero bias, and does not rely on guiding wave functions.
 \end{enumerate}
 
 \section{Regularized estimator}
 \begin{enumerate}
-\item The infinite variance of the naive Monte Carlo estimate of $\frac{\partial E}{\partial p}$ is caused by the divergence of the estimator near the nodes of $\Psi$.
+\item We begin by proving that the naive Monte Carlo estimator for $\frac{\partial E}{\partial p}$ suffers from an infinite variance due to a $1/r^4$ divergence of $Q^2$ near the nodes of $\Psi$, where $Q = \frac{H\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi}$ and $r$ is the normal distance from the node.
 
-\item The variance can be made finite by regularizing the naive estimator within a distance $\epsilon$ from the nodes, while leaving it bare away from this region.
+\item The infinite variance can be dealt with by using a regularized estimator $Q * f_\epsilon$, where 
+\[ f_\epsilon(r) = \begin{cases} 
+      O(\frac{r}{\epsilon}) & \frac{r}{\epsilon} < 1 \\
+      1 & \frac{r}{\epsilon} \ge 1 \\
+   \end{cases}
+\]
 
-\item An additional constraint on the regularization function allows us to tune the bias of the estimator to be negligible, precisely $O(\epsilon^3)$. 
+\item For a general function $f_\epsilon$ satisfying the conditions above, the regularized estimator $Q * f_\epsilon$ will have a linear-order bias in $\epsilon$.
 
-\item The final regularization function, which satisfies all of these constraints, takes a simple polynomial form.
+\item A simple normalization condition on $f_\epsilon$ ensures a bias of $O(\epsilon^3)$, allowing for efficient extrapolation to zero bias.
 
-\item This regularized estimator serves as a lightweight, flexible alternative to the commonly used reweighting and improved estimator methods.
+\item Practically, the finite variance, zero bias estimation of $\frac{\partial E}{\partial p}$ using $Q * f_\epsilon$ can be carried out in four steps.
 
-\item A practical algorithm for using this regularized estimator follows three steps. 
 \end{enumerate}
 
 \section{Application to LiH molecule}
 \begin{enumerate}
-\item We demonstrate the effectiveness of the regularized estimator on a multi-Slater Jastrow (MSJ) wave function for the LiH molecule.
+\item We test the effectiveness of the regularized estimator in evaluating $\frac{\partial E}{\partial p}$ for the determinantal coefficients of a multi-Slater Jastrow (MSJ) wave function on the LiH molecule.
 
-\item In Figure 1 we illustrate how the regularization counteracts divergences across a node in the LiH trial wave function.
+\item We begin by illustrating how the regularized estimator removes the $1/r^4$ divergence of the naive estimator across the nodes of $\Psi$.
 
-\item In Figure 2 we show the bias-variance tradeoff inherent to the regularization and their scaling with $\epsilon$.
+\item By integrating across the node we recover the predicted $O(1/\epsilon), O(\epsilon^3)$ scalings of the variance and bias of the regularized estimator. 
 
-\item We also present the effect of the regularization on the distribution of $\frac{H\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi}$ for various $\epsilon$ in Figure 3.
-
-\item Finally, in Figure 4 we illustrate how the regularization can increase the efficiency of an optimization of the LiH MSJ trial wave function.
+\item We conclude by calculating a zero bias, finite variance estimation of $\frac{\partial E}{\partial p}$ for a determinantal coefficient using the four step process proposed earlier.
 \end{enumerate}
 
 \section{Conclusions}
+\begin{enumerate}
+\item Integral to the reliability of variational Monte Carlo wave function optimization methods is the finite variance estimation of $\frac{\partial E}{\partial p}$.
 
-\pagebreak
+\item  In this work, we derive and test a simple regularized estimator for $\frac{\partial E}{\partial p}$ which has finite variance, can be extrapolated to zero bias, and does not rely on guiding wave functions.
+\end{enumerate}
 \end{document}

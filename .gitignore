@@ -4,3 +4,4 @@
 *.synctex.gz
 *.gz
 vmc/
+*__pycache__*
