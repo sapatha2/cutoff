@@ -8,8 +8,8 @@ from pyqmc_regr import PGradTransform_new
 from wavefunction import wavefunction
 
 if __name__ == '__main__':
-  nconfig = 100000
-  ncore = 20
+  nconfig_per_core = 100 #5000
+  ncore = 2
   cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075])
   cutoffs = np.sort(cutoffs)
   mol, mf, mc, wf, to_opt, freeze = wavefunction(return_mf=True)
@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
   distvmc(
       wf,
-      pyqmc.initial_guess(mol,nconfig),
+      pyqmc.initial_guess(mol,nconfig_per_core * ncore),
       client=client,
       accumulators = {"pgrad": pgrad}, 
       nsteps_per=1000,
