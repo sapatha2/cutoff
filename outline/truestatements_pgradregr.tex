@@ -4,7 +4,7 @@
 \begin{enumerate}
 \item The naive Monte Carlo estimator for $\frac{\partial E}{\partial p}$ has an infinite variance due to the $1/r^4$ divergence of $Q^2$ near the nodes of $\Psi$, where $Q \equiv \frac{H\Psi}{\Psi} \frac{\partial_p \Psi}{\Psi}$ and $r$ is the normal distance from the nodal surface.
 \begin{enumerate}
-\item \textbf{Evidence:} Proof, Citations, Figure: \textit{viznode.pdf}
+\item \textbf{Evidence:} Proof, Figure: \textit{viznode.pdf}
 \end{enumerate}
 
 \item The finite mean and infinite variance of $Q$ indicate that the probability density $\rho(|Q|)$ has a power-law tail with exponent $1 < \tau < 2$.
@@ -46,7 +46,7 @@
 \noindent\rule{\textwidth}{1pt}
 \item Commonly used VMC wave function optimization techniques rely on reliable Monte Carlo estimates of $\frac{\partial E}{\partial p}$ in evaluating wavefunction parameter updates.
 \begin{enumerate}
-\item \textbf{Evidence:} Citations - Sorella (SR), Umrigar (Linear, Newton)
+\item \textbf{Evidence:} Stochastic Reconfiguration \cite{PhysRevB.64.024512, doi:10.1063/1.1604379}, Linear, Newton and perturbative methods \cite{Toulouse2007}.
 \end{enumerate}
 
 \item The infinite variance of the naive estimator of $\frac{\partial E}{\partial p}$ causes the estimated statistical error bar to be incorrect, rendering the estimation of the mean unreliable.
@@ -56,14 +56,15 @@
 
 \item The standard methods of dealing with this infinite variance employ guiding or auxiliary wave functions and yield zero bias estimations of $\frac{\partial E}{\partial p}$ with finite variance at a cost comparable to a bare VMC calculation.
 \begin{enumerate}
-\item \textbf{Evidence:} Citations - Assaraf and Caffarel, Sorella
+\item \textbf{Evidence:} Reweighting scheme \cite{Attaccalite2008, Avella}, improved estimators \cite{doi:10.1063/1.1286598, Assaraf2003}.
 \end{enumerate}
 
 \item Finite variance cannot be achieved with arbitrary guiding functions, so significant effort must go into the construction of complicated guiding functions which exactly cancel unwanted divergences.
 \begin{enumerate}
-\item \textbf{Evidence:} Citations - Assaraf and Caffarel, Sorella
+\item \textbf{Evidence:} References from previous
 \end{enumerate}
 
-
 \end{enumerate}
+\bibliographystyle{unsrt}
+\bibliography{pgradregr}
 \end{document}

@@ -6,9 +6,9 @@
 \begin{enumerate}
 \item \textbf{Overall goal } The development of reliable optimization schemes for correlated trial wave functions has been a long standing problem in quantum Monte Carlo (QMC) simulations of realistic systems.
 
-\item \textbf{Barrier to achieving that goal } Integral to the reliability of energy optimization schemes is the accurate, finite variance estimation of $\frac{\partial E}{\partial p}$.
+\item \textbf{Barrier to achieving that goal } Integral to the reliability of energy optimization schemes is the accurate, finite variance estimation of $\frac{\partial E}{\partial p}$ \cite{PhysRevB.64.024512, doi:10.1063/1.1604379, Toulouse2007}.
 
-\item \textbf{Current state of the art} Widely accepted estimation techniques involve guiding or auxiliary wave functions, such as Sorella's reweighting scheme [ref] and the improved estimators of Assaraf and Caffarel [ref].
+\item \textbf{Current state of the art} Widely accepted estimation techniques involve guiding or auxiliary wave functions, such as a reweighting scheme \cite{Attaccalite2008, Avella} or the improved estimators of Assaraf and Caffarel \cite{doi:10.1063/1.1286598, Assaraf2003}.
 
 \item \textbf{Our advancement to the state of the art } In this work, we derive and test a simple regularized estimator for $\frac{\partial E}{\partial p}$ which has finite variance, can be extrapolated to zero bias, and does not rely on guiding wave functions.
 \end{enumerate}
@@ -49,6 +49,9 @@
 
 \item  In this work, we derive and test a simple regularized estimator for $\frac{\partial E}{\partial p}$ which has finite variance, can be extrapolated to zero bias, and does not rely on guiding wave functions.
 \end{enumerate}
+
+\bibliographystyle{unsrt}
+\bibliography{pgradregr}
 
 \section{Figures}
 \begin{figure*}

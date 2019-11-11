@@ -5,3 +5,5 @@
 *.gz
 vmc/
 *__pycache__*
+*.bbl
+*.blg
