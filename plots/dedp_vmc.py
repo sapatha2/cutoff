@@ -10,7 +10,7 @@ from wavefunction import wavefunction
 if __name__ == '__main__':
   nconfig_per_core = 100
   ncore = 20
-  nsteps = 5000
+  nsteps = 20000
 
   cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075])
   cutoffs = np.sort(cutoffs)
