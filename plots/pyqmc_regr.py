@@ -36,9 +36,9 @@ class PGradTransform_new:
  
         node_cut, f = self._node_regr(configs, wf)
 
-        d["dpH"] = np.einsum("i,ij->ij", energy, dp * f[:, np.newaxis])
+        d["dpH"] = np.einsum("i,ijk->ijk", energy, dp[:, :, np.newaxis] * f[:, np.newaxis, :])
         d["dppsi"] = dp 
-        d["dpidpj"] = np.einsum("ij,ik->ijk", dp, dp * f[:, np.newaxis])
+        d["dpidpj"] = np.einsum("ij,ikl->ijkl", dp, dp[:, :, np.newaxis] * f[:, np.newaxis, :])
         return d
 
     def avg(self, configs, wf):
@@ -53,8 +53,8 @@ class PGradTransform_new:
         d = {}
         for k, it in den.items():
             d[k] = np.mean(it, axis=0)
-        d["dpH"] = np.einsum("i,ijk->jk", energy, dp * f[:, np.newaxis, :]) / nconf
+        d["dpH"] = np.einsum("i,ijk->jk", energy, dp[:, :, np.newaxis] * f[:, np.newaxis, :]) / nconf
         d["dppsi"] = np.mean(dp, axis=0)
-        d["dpidpj"] = np.einsum("ij,ikl->jkl", dp, dp * f[:, np.newaxis, :]) / nconf
+        d["dpidpj"] = np.einsum("ij,ikl->jkl", dp, dp[:, :, np.newaxis] * f[:, np.newaxis, :]) / nconf
         d["node_cut"] = np.mean(node_cut, axis=0)
         return d
