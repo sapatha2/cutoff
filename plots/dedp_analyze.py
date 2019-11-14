@@ -29,12 +29,11 @@ def analyze_hdf5(hdf_file, nsplit, nbootstrap, end=20000):
     dpH = dpH[warmup:end]
     dppsi = dppsi[warmup:end]
     e = e[warmup:end]
-    dpH = np.array(np.split(dpH, nsplit)).mean(axis=0)
-    dppsi = np.array(np.split(dppsi, nsplit)).mean(axis=0)
-    e = np.array(np.split(e, nsplit)).mean(axis=0)
-
+    dpH = np.array(np.split(dpH, nsplit)).mean(axis=1)
+    dppsi = np.array(np.split(dppsi, nsplit)).mean(axis=1)
+    e = np.array(np.split(e, nsplit)).mean(axis=1)
+    
     dEdp_mu, dEdp_std = bootstrap(dpH, e, dppsi, nbootstrap)
-    print(dEdp_mu.shape)
 
     cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
     cutoffs = np.sort(cutoffs)
