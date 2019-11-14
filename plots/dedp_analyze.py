@@ -25,14 +25,17 @@ def analyze_hdf5(hdf_file, nsplit, nbootstrap, end=20000):
         e = np.array([np.array(x) for x in list(hdf['pgradtotal'])])
     
     print(dpH.shape)
-    warmup = 100
+    warmup = 0
     dpH = dpH[warmup:end]
     dppsi = dppsi[warmup:end]
     e = e[warmup:end]
     dpH = np.array(np.split(dpH, nsplit)).mean(axis=1)
     dppsi = np.array(np.split(dppsi, nsplit)).mean(axis=1)
+    print(e.shape)
     e = np.array(np.split(e, nsplit)).mean(axis=1)
-    
+    print(e.shape)
+    print(e.mean(), e.std())
+    exit(0)
     dEdp_mu, dEdp_std = bootstrap(dpH, e, dppsi, nbootstrap)
 
     cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
@@ -43,7 +46,7 @@ def analyze_hdf5(hdf_file, nsplit, nbootstrap, end=20000):
     return df
 
 if __name__ == '__main__':
-    analyze_hdf5('dedp_vmc.hdf5', 100, 100, end=14000)
+    analyze_hdf5('dedp_vmc.hdf5', 1000, 100, end=20000)
     '''
     import matplotlib.pyplot as plt 
     import statsmodels.api as sm

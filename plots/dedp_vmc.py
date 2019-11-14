@@ -33,7 +33,7 @@ if __name__ == '__main__':
       pyqmc.initial_guess(mol,nconfig_per_core * ncore),
       client=client,
       accumulators = {"pgrad": pgrad}, 
-      nsteps_per=1,
+      nsteps_per=1000,
       nsteps=nsteps,
       hdf_file='dedp_vmc.hdf5'
   )
