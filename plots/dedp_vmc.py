@@ -18,8 +18,6 @@ if __name__ == '__main__':
   det_coeff = np.random.normal(size = wf.parameters['wf1det_coeff'].shape)
   det_coeff /= np.linalg.norm(det_coeff)
   wf.parameters['wf1det_coeff'] = det_coeff
-  print(wf.parameters)
-  exit(0)
 
   eacc = EnergyAccumulator(mol)
   transform = LinearTransform(wf.parameters, to_opt, freeze)
