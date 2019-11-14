@@ -15,7 +15,12 @@ if __name__ == '__main__':
   cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075])
   cutoffs = np.sort(cutoffs)
   mol, mf, mc, wf, to_opt, freeze = wavefunction(return_mf=True)
-  
+  det_coeff = np.random.normal(size = wf.parameters['wf1det_coeff'].shape)
+  det_coeff /= np.linalg.norm(det_coeff)
+  wf.parameters['wf1det_coeff'] = det_coeff
+  print(wf.parameters)
+  exit(0)
+
   eacc = EnergyAccumulator(mol)
   transform = LinearTransform(wf.parameters, to_opt, freeze)
   pgrad = PGradTransform_new(eacc, transform, np.array(cutoffs))
