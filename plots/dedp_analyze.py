@@ -16,29 +16,35 @@ def bootstrap(dpH, e, dppsi, N):
     dEdps = np.array(dEdps)
     dEdp_mu = np.mean(dEdps, axis=0)
     dEdp_std = np.std(dEdps, axis=0)
-    return dEdp_mu, dEdp_std
+    return dEdp_mu[0], dEdp_std[0]
 
-def analyze_hdf5(hdf_file, nsplit, nbootstrap):
+def analyze_hdf5(hdf_file, nsplit, nbootstrap, end=20000):
     with h5py.File(hdf_file, 'r') as hdf:
         dpH = np.array([np.array(x) for x in list(hdf['pgraddpH'])])
         dppsi = np.array([np.array(x) for x in list(hdf['pgraddppsi'])])
         e = np.array([np.array(x) for x in list(hdf['pgradtotal'])])
     
-    print(dpH.shape) 
+    print(dpH.shape)
+    warmup = 100
+    dpH = dpH[warmup:end]
+    dppsi = dppsi[warmup:end]
+    e = e[warmup:end]
     dpH = np.array(np.split(dpH, nsplit)).mean(axis=0)
     dppsi = np.array(np.split(dppsi, nsplit)).mean(axis=0)
     e = np.array(np.split(e, nsplit)).mean(axis=0)
 
     dEdp_mu, dEdp_std = bootstrap(dpH, e, dppsi, nbootstrap)
-   
-    cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075])
+    print(dEdp_mu.shape)
+
+    cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
     cutoffs = np.sort(cutoffs)
     df = pd.DataFrame({'cutoff':cutoffs, 'dEdp': dEdp_mu, 'err': dEdp_std})
     df.to_json('dedp_vmc.json')
+    print(df)
     return df
 
 if __name__ == '__main__':
-    analyze_hdf5('dedp_vmc.hdf5', 1000, 100)
+    analyze_hdf5('dedp_vmc.hdf5', 100, 100, end=14000)
     '''
     import matplotlib.pyplot as plt 
     import statsmodels.api as sm
