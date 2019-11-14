@@ -2,25 +2,44 @@ import numpy as np
 import pandas as pd
 import h5py
 
-def analyze_hdf5(hdf_file):
+def bootstrap(dpH, e, dppsi, N):
+    dEdps = []
+    for i in range(N):
+        sample = np.random.choice(dpH.shape[0], dpH.shape[0], replace=True)
+        dpH_sample = dpH[sample]
+        e[sample] = e[sample]
+        dppsi[sample] = dppsi[sample]
+        
+        dEdp = np.mean(dpH_sample, axis=0) -\
+               np.mean(e, axis=0) * np.mean(dppsi, axis=0)[:, np.newaxis]
+        dEdps.append(dEdp)
+    dEdps = np.array(dEdps)
+    dEdp_mu = np.mean(dEdps, axis=0)
+    dEdp_std = np.std(dEdps, axis=0)
+    return dEdp_mu, dEdp_std
+
+def analyze_hdf5(hdf_file, nsplit, nbootstrap):
     with h5py.File(hdf_file, 'r') as hdf:
-        print(list(hdf.keys()))
         dpH = np.array([np.array(x) for x in list(hdf['pgraddpH'])])
         dppsi = np.array([np.array(x) for x in list(hdf['pgraddppsi'])])
         e = np.array([np.array(x) for x in list(hdf['pgradtotal'])])
+    
     print(dpH.shape) 
-    dEdp = dpH - np.einsum('i,ij->ij',e,dppsi)[:, np.newaxis] #(nstep, nparm, cutoff) #Raw
+    dpH = np.array(np.split(dpH, nsplit)).mean(axis=0)
+    dppsi = np.array(np.split(dppsi, nsplit)).mean(axis=0)
+    e = np.array(np.split(e, nsplit)).mean(axis=0)
 
-    dEdp_mu = np.mean(dEdp, axis=0)[0] #Only a single parameter evaluated
-    dEdp_std = np.std(dEdp, axis=0)[0]/np.sqrt(dEdp.shape[0])
+    dEdp_mu, dEdp_std = bootstrap(dpH, e, dppsi, nbootstrap)
    
     cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075])
     cutoffs = np.sort(cutoffs)
     df = pd.DataFrame({'cutoff':cutoffs, 'dEdp': dEdp_mu, 'err': dEdp_std})
     df.to_json('dedp_vmc.json')
     return df
+
 if __name__ == '__main__':
-    #analyze_hdf5('dedp_vmc.hdf5')
+    analyze_hdf5('dedp_vmc.hdf5', 1000, 100)
+    '''
     import matplotlib.pyplot as plt 
     import statsmodels.api as sm
     from statsmodels.sandbox.regression.predstd import wls_prediction_std
@@ -53,3 +72,4 @@ if __name__ == '__main__':
     ax.set_ylabel(r'$\partial E/\partial p$ (Ha)')
     ax.set_xlabel(r'$\epsilon$ (Bohr)')
     plt.savefig('dedp.pdf',bbox_inches='tight')
+    '''
