@@ -12,10 +12,11 @@ if __name__ == '__main__':
   ncore = 20
   nsteps = 20000
 
-  cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075])
+  cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
   cutoffs = np.sort(cutoffs)
   mol, mf, mc, wf, to_opt, freeze = wavefunction(return_mf=True)
-  det_coeff = np.random.normal(size = wf.parameters['wf1det_coeff'].shape)
+  det_coeff = np.copy(wf.parameters['wf1det_coeff'])
+  det_coeff[-1] = 1.
   det_coeff /= np.linalg.norm(det_coeff)
   wf.parameters['wf1det_coeff'] = det_coeff
 
