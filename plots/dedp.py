@@ -98,25 +98,14 @@ if __name__ == '__main__':
     cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.20])
     cutoffs = np.sort(cutoffs)
     
-    #Fit with upper bound 
-    bound = 0.15
-    m = means[cutoffs <= bound]
-    s =  stds[cutoffs <= bound]
-    c = cutoffs[cutoffs <= bound]
-   
+    #Fit with upper bound for cubic scaling
     fig, ax = plt.subplots(1, 1, figsize=(3,3))
-    ax.errorbar(c, m, s, fmt='o', color='tab:blue',zorder=1)
-    ax.errorbar(cutoffs, means, stds, fmt='o',alpha=0.5,color='tab:blue',zorder=0)
+    ax.errorbar(cutoffs, means, stds, fmt='o',color='tab:blue',zorder=0)
 
-    p = polynomial.polyfit(c, m, [0,3])
-    print("Polyfit: ", p)
-    x = np.linspace(0, 0.2, 100)
-    ax.plot(x, p[0] + p[3] * x**3, '--',c='tab:orange',zorder=100)
-    
     p = polynomial.polyfit(cutoffs, means, [0,3,4])
     print("Polyfit quartic: ", p)
     x = np.linspace(0, 0.2, 100)
-    ax.plot(x, p[0] + p[3] * x**3 + p[4]* x**4, '--',c='tab:orange', alpha=0.5,zorder=99)
+    ax.plot(x, p[0] + p[3] * x**3 + p[4]* x**4, '--',c='tab:orange', zorder=99)
 
     ax.set_xlabel(r'$\epsilon$ (Bohr)')
     ax.set_ylabel(r'$\partial E/\partial p$ (mHa)')
