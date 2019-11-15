@@ -99,9 +99,9 @@ if __name__ == '__main__':
     cutoffs = np.sort(cutoffs)
     
     #Fit beyond 1e-2 only 
-    means = means[cutoffs >= 1e-2]
-    stds =  stds[cutoffs >= 1e-2]
-    cutoffs = cutoffs[cutoffs >= 1e-2]
+    means = means[cutoffs >= 1e-5]
+    stds =  stds[cutoffs >= 1e-5]
+    cutoffs = cutoffs[cutoffs >= 1e-5]
     
     #Fit with upper bound for cubic scaling
     bound = 0.12
