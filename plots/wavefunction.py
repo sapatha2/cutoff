@@ -70,7 +70,7 @@ def wavefunction(return_mf = False):
     #Only need to take derivatives wrt the highest energy det
     #, will have least overlap with nodes!
     freeze = {'wf1det_coeff': np.ones(freeze['wf1det_coeff'].shape).astype(bool)}
-    freeze['wf1det_coeff'][-1] = False
+    freeze['wf1det_coeff'][10] = False
 
     if(return_mf): return mol, mf, mc, wf, to_opt, freeze
     else: return mol, wf, to_opt, freeze

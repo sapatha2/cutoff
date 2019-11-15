@@ -10,15 +10,13 @@ from wavefunction import wavefunction
 if __name__ == '__main__':
   nconfig_per_core = 100
   ncore = 20
-  nsteps = 20000
+  nsteps = 100000
 
-  cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+  cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.20])
   cutoffs = np.sort(cutoffs)
   mol, mf, mc, wf, to_opt, freeze = wavefunction(return_mf=True)
-  det_coeff = np.copy(wf.parameters['wf1det_coeff'])
-  det_coeff[-1] = 1.
-  det_coeff /= np.linalg.norm(det_coeff)
-  wf.parameters['wf1det_coeff'] = det_coeff
+  wf.parameters['wf1det_coeff'] *= 0 
+  wf.parameters['wf1det_coeff'][[0,10]] = 1./np.sqrt(2.)
 
   eacc = EnergyAccumulator(mol)
   transform = LinearTransform(wf.parameters, to_opt, freeze)
@@ -33,7 +31,7 @@ if __name__ == '__main__':
       pyqmc.initial_guess(mol,nconfig_per_core * ncore),
       client=client,
       accumulators = {"pgrad": pgrad}, 
-      nsteps_per=1000,
+      nsteps_per=100,
       nsteps=nsteps,
       hdf_file='dedp_vmc.hdf5'
   )

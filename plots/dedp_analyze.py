@@ -23,8 +23,11 @@ def analyze_hdf5(hdf_file, nsplit, nbootstrap, end=20000):
         dpH = np.array([np.array(x) for x in list(hdf['pgraddpH'])])
         dppsi = np.array([np.array(x) for x in list(hdf['pgraddppsi'])])
         e = np.array([np.array(x) for x in list(hdf['pgradtotal'])])
-    
-    print(dpH.shape)
+   
+    print(dppsi.shape)
+    print(dppsi[300:, 0].mean())
+    print(dpH[300:, 0,0 ].mean(), dpH[300:, 0, 0].std())
+    exit(0)
     warmup = 0
     dpH = dpH[warmup:end]
     dppsi = dppsi[warmup:end]
