@@ -3,6 +3,7 @@ import pandas as pd
 import h5py
 import matplotlib.pyplot as plt
 from pyqmc.reblock import _reblock, reblock_summary, opt_block, optimally_reblocked
+from numpy.polynomial import polynomial 
 
 def analyze_hdf5(hdf_file):
     with h5py.File(hdf_file, 'r') as hdf:
@@ -13,18 +14,19 @@ def analyze_hdf5(hdf_file):
 
 if __name__ == '__main__':
     e, dppsi, dpH = analyze_hdf5('dedp_vmc.hdf5')
-    
+    print("Steps complete ", e.shape)
+
     #Check timetraces for warmups
     dppsi = dppsi[:, 0]
     dpH = dpH[:, 0]
     '''
-    plt.plot(dpH[:, :25])
+    plt.plot(dpH)
     plt.show()
     exit(0)
     '''
 
     #Plot histograms
-    warmup = 400
+    warmup = 2000
     e = e[warmup:]
     dppsi = dppsi[warmup:]
     dpH = dpH[warmup:]
@@ -53,7 +55,7 @@ if __name__ == '__main__':
     '''
 
     #Evaluate errors after reblocking
-    steps_per_block = 50
+    steps_per_block = 100
     reblocked_e = np.array(_reblock(e, e.shape[0]/steps_per_block))
     reblocked_dppsi = np.array(_reblock(dppsi, dppsi.shape[0]/steps_per_block))
     reblocked_dpH = np.array([np.array(_reblock(dpH[:,i], dpH.shape[0]/steps_per_block))
@@ -64,7 +66,7 @@ if __name__ == '__main__':
         print(v.mean(), v.std()/np.sqrt(v.shape[0]))
 
     #Bootstrapping
-    Nbs = 400
+    Nbs = 100
 
     print("Bootstrapping")
     for v in [reblocked_e, reblocked_dppsi, reblocked_dpH[:, 0]]:
@@ -91,9 +93,31 @@ if __name__ == '__main__':
         dEdp.append(bs_dpH- np.array([bs_e * bs_dppsi] * bs_dpH.shape[0]))
     dEdp = np.array(dEdp)
 
-    means = dEdp.mean(axis=0)
-    stds  = dEdp.std(axis=0)
-    cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+    means = dEdp.mean(axis=0)/1e-3 #mHa
+    stds  = dEdp.std(axis=0)/1e-3
+    cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.20])
     cutoffs = np.sort(cutoffs)
-    plt.errorbar(cutoffs, means, stds, fmt='o')
-    plt.show()
+    
+    #Fit with upper bound 
+    bound = 0.15
+    m = means[cutoffs <= bound]
+    s =  stds[cutoffs <= bound]
+    c = cutoffs[cutoffs <= bound]
+   
+    fig, ax = plt.subplots(1, 1, figsize=(3,3))
+    ax.errorbar(c, m, s, fmt='o', color='tab:blue',zorder=1)
+    ax.errorbar(cutoffs, means, stds, fmt='o',alpha=0.5,color='tab:blue',zorder=0)
+
+    p = polynomial.polyfit(c, m, [0,3])
+    print("Polyfit: ", p)
+    x = np.linspace(0, 0.2, 100)
+    ax.plot(x, p[0] + p[3] * x**3, '--',c='tab:orange',zorder=100)
+    
+    p = polynomial.polyfit(cutoffs, means, [0,3,4])
+    print("Polyfit quartic: ", p)
+    x = np.linspace(0, 0.2, 100)
+    ax.plot(x, p[0] + p[3] * x**3 + p[4]* x**4, '--',c='tab:orange', alpha=0.5,zorder=99)
+
+    ax.set_xlabel(r'$\epsilon$ (Bohr)')
+    ax.set_ylabel(r'$\partial E/\partial p$ (mHa)')
+    plt.savefig('dedp.pdf',bbox_inches='tight')
