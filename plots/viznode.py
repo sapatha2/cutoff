@@ -67,8 +67,8 @@ def viznode(node_coords, node_grad, cutoffs, vizfile='viznode.pdf'):
       ax[0].plot(x, dpH *  (val[0]*np.exp(val[1]))**2, '-', label = r'$10^{'+str(int(np.log10(cutoff)))+'}$')
       ax[1].plot(x, np.log10(dpH**2 * (val[0]*np.exp(val[1]))**2), '-')
 
-  ax[0].set_ylabel(r'$\frac{H\Psi}{\Psi} \frac{\partial_p\Psi}{\Psi} f_\epsilon |\Psi|^2$')
-  ax[1].set_ylabel(r'log$_{10}(|\frac{H\Psi}{\Psi} \frac{\partial_p\Psi}{\Psi}|^2 f_\epsilon ^2|\Psi|^2)$')
+  ax[0].set_ylabel(r'$Q*f_\epsilon |\Psi|^2$')
+  ax[1].set_ylabel(r'log$_{10}(Q^2* f_\epsilon^2|\Psi|^2)$')
   ax[1].set_xlabel(r'$x$ (Bohr)')
   ax[0].set_xlim((-max(x) - 0.02,max(x) + 0.02))
   ax[1].set_xlim((-max(x) - 0.02,max(x) + 0.02))
@@ -90,21 +90,20 @@ def integratenode(node_coords, node_grad, vizfile='integratenode.pdf', integ_ran
   biases = []
   biases_err = []
   variances = []
-  cutoffs = list(np.logspace(-8, -1, 20)) + [0.05, 0.075, 0.15, 0.2, 0.3, 0.5]
-  normalization = integrate.quad(lambda x: psi2(x, node_coords, node_grad, wf), -integ_range, integ_range, epsabs = 1e-15, epsrel = 1e-15)
+  cutoffs = list(np.logspace(-6, -1, 20)) + [0.05, 0.075]
   '''
+  normalization = integrate.quad(lambda x: psi2(x, node_coords, node_grad, wf), -integ_range, integ_range, epsabs = 1e-15, epsrel = 1e-15)
   for cutoff in cutoffs:
     print(cutoff)
     pgrad = PGradTransform_new(eacc, transform, nodal_cutoff = np.array([cutoff]))
-    bias = integrate.quad(lambda x: dpH(x, pgrad, pgrad_bare, node_coords, node_grad, wf)/1e-40, -cutoff, cutoff, epsabs = 1e-15, epsrel = 1e-15)
-    variance = integrate.quad(lambda x: dpH2(x, pgrad, node_coords, node_grad, wf),  -cutoff, cutoff, epsabs = 1e-15, epsrel = 1e-15)
+    bias = integrate.quad(lambda x: dpH(x, pgrad, pgrad_bare, node_coords, node_grad, wf)/1e-40, -cutoff, cutoff, epsabs = 1e-15, epsrel = 1e-15, points=[0])
+    variance = integrate.quad(lambda x: dpH2(x, pgrad, node_coords, node_grad, wf),  -cutoff, cutoff, epsabs = 1e-15, epsrel = 1e-15, points=[0])
     variance += integrate.quad(lambda x: dpH2(x, pgrad, node_coords, node_grad, wf),  -integ_range + cutoff, integ_range - cutoff, epsabs = 1e-15, epsrel = 1e-15)
     biases.append(bias[0]*1e-40/normalization[0])
     variances.append(variance[0]/normalization[0])
   df = pd.DataFrame({'cutoff': cutoffs, 'bias': biases, 'variance': variances})
   df.to_pickle('integratenode.pickle')
-  '''
-  
+  ''' 
   df = pd.read_pickle('integratenode.pickle')
   #Fit theory curves and visualize
   ind = np.argsort(df['cutoff'])
@@ -114,8 +113,8 @@ def integratenode(node_coords, node_grad, vizfile='integratenode.pdf', integ_ran
   fig, ax = plt.subplots(nrows = 2, ncols = 1, figsize = (3,6), sharex=True)
   x = df['cutoff'].iloc[ind]
   y = np.abs(df['bias']).iloc[ind]
-  y = y[x>=1e-6]
-  x = x[x>=1e-6]
+  y = y[2:]
+  x = x[2:]
   
   p = polynomial.polyfit(x, y, [3])
   print("Fit for bias ", p)
@@ -127,8 +126,8 @@ def integratenode(node_coords, node_grad, vizfile='integratenode.pdf', integ_ran
  
   x = df['cutoff'].iloc[ind]
   y = df['variance'].iloc[ind]
-  y = y[x>=1e-6]
-  x = x[x>=1e-6]
+  y = y[2:]
+  x = x[2:]
   x = np.log10(x)
   y = np.log10(y)
   poly = np.log10(poly)

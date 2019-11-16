@@ -57,13 +57,19 @@
 \begin{figure*}
 \centering
 \includegraphics{../plots/viznode.pdf}
-\caption{Logarithm of $Q * f_\epsilon$ and $(Q * f_\epsilon)^2$ plotted against the normal coordinate $r$ from a node of LiH. Curve colors correspond to different values of $\epsilon$ ranging from $10^{-1}$ to $10^{-8}$}
+\caption{$Q * f_\epsilon$ and logarithm $(Q * f_\epsilon)^2$, $Q = \frac{H\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi}$,  plotted against the normal coordinate $x$ from a node of $\Psi$. Curve colors correspond to different values of $\epsilon$ ranging from $10^{-1}$ to $10^{-8}$ Bohr.}
 \end{figure*}
 
 \begin{figure*}
 \centering
 \includegraphics{../plots/integratenode.pdf}
-\caption{Scaled bias and variance of Q evaluated by numerical integration from $r = -0.1$ to $r = 0.1$ across the node in Figure 1. The blue dots are the numerically integrated values and the orange curves indicate best fits to the functions $a\epsilon^3 + b$ and $c/\epsilon + d$ for the bias and variance, respectively.}
+\caption{Scaled bias and variance of Q evaluated by numerical integration from $r = -0.1$ to $r = 0.1$ across the node in Figure 1. The blue dots are the numerically integrated values and the orange curves indicate best fits to the functions $a\epsilon^3$ and $b + c/\epsilon$ for the bias and variance, respectively.}
+\end{figure*}
+
+\begin{figure*}
+\centering
+\includegraphics{../plots/dedp.pdf}
+\caption{Zero bias, finite variance extrapolation for $\partial E/\partial p$ using the regularized estimator. The blue points are evaluated using VMC, the orange curve is a fit to a cubic polynomial $a + b\epsilon^3$, and the red star denotes the extrapolated estimation. }
 \end{figure*}
 
 \end{document}

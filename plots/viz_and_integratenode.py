@@ -24,10 +24,10 @@ def sweepelectron():
 
   #Sweep electron 0
   full_df = None
-  e = 0 #electron
+  e = 3 #electron
   dim = 1 #Coordinate to vary
   
-  for i in np.linspace(-5, 5, 200):
+  for i in np.linspace(0, 20, 200):
     new_configs = copy.deepcopy(configs)
     new_configs[:,e,dim] += i
     shifted_configs = OpenConfigs(new_configs)
@@ -106,6 +106,8 @@ def locatenode(df, scale):
 
     #Upgrade gradient
     node_coords += grad * res.x[0]
+    val = wf.recompute(OpenConfigs(node_coords))
+    print("Wfval post: ", np.exp(val[1])*val[0])
 
   return node_coords, grad
 
@@ -118,11 +120,11 @@ if __name__ == '__main__':
 
   """Pinpoint the location of the node"""
   sweepdf = pd.read_json('sweepelectron.json')
-  node_coords, node_grad = locatenode(sweepdf, scale = 1e-50)
-
-  """Visualize the node"""
-  cutoffs = [1e-5, 1e-3, 1e-2, 1e-1]
-  viznode(node_coords, node_grad, cutoffs)
+  node_coords, node_grad = locatenode(sweepdf, scale = 1e-90)
   
+  """Visualize the node"""
+  #cutoffs = [1e-5, 1e-3, 1e-2, 1e-1]
+  #viznode(node_coords, node_grad, cutoffs)
+
   """Integrate across the node"""
   integratenode(node_coords, node_grad, poly=1e-2, integ_range = 0.1) 
