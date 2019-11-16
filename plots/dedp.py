@@ -10,15 +10,30 @@ def analyze_hdf5(hdf_file):
         e = np.array([np.array(x) for x in list(hdf['pgradtotal'])])
         dppsi = np.array([np.array(x) for x in list(hdf['pgraddppsi'])])
         dpH = np.array([np.array(x) for x in list(hdf['pgraddpH'])])
+    
+    df = pd.DataFrame({'e':e, 'dppsi': dppsi[:,0]})
+    for i in range(32):
+        df['dpH_'+str(i)] = dpH[:,0,i]
+    df.to_pickle('dedp.pickle')
     return e, dppsi, dpH
 
 if __name__ == '__main__':
-    e, dppsi, dpH = analyze_hdf5('dedp_vmc.hdf5')
+    #e, dppsi, dpH = analyze_hdf5('dedp_vmc.hdf5')
+    #exit(0)
+    df = pd.read_pickle('dedp.pickle')
+    
+    #Shuffle 
+    print(np.isnan(df['dpH_0']).sum(), "isnan")
+    df = df[np.isfinite(df['dpH_0'])]
+    e = df['e'].values
+    dppsi = df['dppsi'].values
+    dpH = []
     print("Steps complete ", e.shape)
+    for i in range(32):
+      dpH.append(df['dpH_'+str(i)])
+    dpH = np.array(dpH).T
 
     #Check timetraces for warmups
-    dppsi = dppsi[:, 0]
-    dpH = dpH[:, 0]
     '''
     plt.plot(dpH)
     plt.show()
@@ -26,7 +41,7 @@ if __name__ == '__main__':
     '''
 
     #Plot histograms
-    warmup = 2000
+    warmup = 20000
     e = e[warmup:]
     dppsi = dppsi[warmup:]
     dpH = dpH[warmup:]
@@ -55,7 +70,7 @@ if __name__ == '__main__':
     '''
 
     #Evaluate errors after reblocking
-    steps_per_block = 100
+    steps_per_block = 8000
     reblocked_e = np.array(_reblock(e, e.shape[0]/steps_per_block))
     reblocked_dppsi = np.array(_reblock(dppsi, dppsi.shape[0]/steps_per_block))
     reblocked_dpH = np.array([np.array(_reblock(dpH[:,i], dpH.shape[0]/steps_per_block))
@@ -64,6 +79,7 @@ if __name__ == '__main__':
     print("Reblocking")
     for v in [reblocked_e, reblocked_dppsi, reblocked_dpH[:, 0]]:
         print(v.mean(), v.std()/np.sqrt(v.shape[0]))
+    print("Blocks remaining: ", v.shape[0])
 
     #Bootstrapping
     Nbs = 100
@@ -114,6 +130,7 @@ if __name__ == '__main__':
     x = np.linspace(0, max(cutoffs), 100)
     ax.plot(x, p[0] + p[3] * x**3, '--',c='tab:orange', zorder=100)
 
+    ax.plot(0, p[0], '*', c='tab:red',markersize=10,zorder=200)
     #p = polynomial.polyfit(cutoffs, means, [0,3,4])
     #print("Polyfit quartic: ", p)
     #ax.plot(x, p[0] + p[3] * x**3 + p[4]* x**4, '--',c='tab:orange', alpha=0.5,zorder=99)

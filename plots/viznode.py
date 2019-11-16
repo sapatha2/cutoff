@@ -53,7 +53,6 @@ def viznode(node_coords, node_grad, cutoffs, vizfile='viznode.pdf'):
   #Move across the node in this path
   val = wf.recompute(coord_path)
   fig, ax = plt.subplots(nrows = 2, ncols = 1, figsize = (3,6), sharex=True)
-  x/=1e-3
   for k, cutoff in enumerate([1e-8]+cutoffs):
     pgrad = PGradTransform_new(eacc, transform, nodal_cutoff = np.array([cutoff]))
     d = pgrad(coord_path, wf)
@@ -62,19 +61,18 @@ def viznode(node_coords, node_grad, cutoffs, vizfile='viznode.pdf'):
     dpH = np.array(d['dpH'])[:, 0, 0]
 
     if(cutoff == 1e-8):
-      ax[0].plot(x, dpH *  (val[0]*np.exp(val[1]))**2, 'k-', label = r'$10^{'+str(int(np.log10(cutoff))+3)+'}$')
+      ax[0].plot(x, dpH *  (val[0]*np.exp(val[1]))**2, 'k-', label = r'$10^{'+str(int(np.log10(cutoff)))+'}$')
       ax[1].plot(x, np.log10(dpH**2 * (val[0]*np.exp(val[1]))**2), 'k-')
     else:
-      ax[0].plot(x, dpH *  (val[0]*np.exp(val[1]))**2, '-', label = r'$10^{'+str(int(np.log10(cutoff))+3)+'}$')
+      ax[0].plot(x, dpH *  (val[0]*np.exp(val[1]))**2, '-', label = r'$10^{'+str(int(np.log10(cutoff)))+'}$')
       ax[1].plot(x, np.log10(dpH**2 * (val[0]*np.exp(val[1]))**2), '-')
 
   ax[0].set_ylabel(r'$\frac{H\Psi}{\Psi} \frac{\partial_p\Psi}{\Psi} f_\epsilon |\Psi|^2$')
   ax[1].set_ylabel(r'log$_{10}(|\frac{H\Psi}{\Psi} \frac{\partial_p\Psi}{\Psi}|^2 f_\epsilon ^2|\Psi|^2)$')
-  ax[1].set_xlabel(r'$x$ (mBohr)')
-  #ax[0].set_ylim((-0.02e-16,5e-17))
+  ax[1].set_xlabel(r'$x$ (Bohr)')
   ax[0].set_xlim((-max(x) - 0.02,max(x) + 0.02))
   ax[1].set_xlim((-max(x) - 0.02,max(x) + 0.02))
-  ax[0].legend(loc='best',title=r'$\epsilon$ (mBohr)')
+  ax[0].legend(loc='best',title=r'$\epsilon$ (Bohr)')
   plt.savefig(vizfile ,bbox_inches='tight')
   plt.close()
 
@@ -121,16 +119,16 @@ def integratenode(node_coords, node_grad, vizfile='integratenode.pdf', integ_ran
   
   p = polynomial.polyfit(x, y, [3])
   print("Fit for bias ", p)
-  xfit = np.linspace(min(x), max(x[x/1e-3<poly]), 1000)
+  xfit = np.linspace(min(x), max(x[x<poly]), 1000)
   fit = p[3] * (xfit) ** 3
-  ax[0].plot(np.log10(x/1e-3), np.log10(y), 'o')
-  ax[0].plot(np.log10(xfit/1e-3), np.log10(fit), '--')
+  ax[0].plot(np.log10(x), np.log10(y), 'o')
+  ax[0].plot(np.log10(xfit), np.log10(fit), '--')
   ax[0].set_ylabel(r'log$_{10}$(Bias)')
  
   x = df['cutoff'].iloc[ind]
   y = df['variance'].iloc[ind]
   y = y[x>=1e-6]
-  x = x[x>=1e-6]/1e-3
+  x = x[x>=1e-6]
   x = np.log10(x)
   y = np.log10(y)
   poly = np.log10(poly)
@@ -140,10 +138,10 @@ def integratenode(node_coords, node_grad, vizfile='integratenode.pdf', integ_ran
   fit = p[0] + p[1] * np.log10(xfit)
   ax[1].plot(x, y, 'o')
   ax[1].plot(np.log10(xfit), fit, '--')
-  ax[1].set_xlabel(r'$log_{10}(\epsilon/$mBohr$)$')
+  ax[1].set_xlabel(r'$log_{10}(\epsilon/$Bohr$)$')
   ax[1].set_ylabel(r'log$_{10}$(Variance)')
-  ax[1].set_xlim((-3.2, 2.3))
-  ax[1].set_xticks(np.arange(-3,3))
+  #ax[1].set_xlim((-3.2, 2.3))
+  #ax[1].set_xticks(np.arange(-3,3))
  
   plt.savefig(vizfile,bbox_inches='tight')
   plt.close()
