@@ -33,5 +33,5 @@ if __name__ == '__main__':
       accumulators = {"pgrad": pgrad}, 
       nsteps_per=100,
       nsteps=nsteps,
-      hdf_file='dedp_vmc.hdf5'
+      hdf_file='dedp_vmc_local.hdf5'
   )

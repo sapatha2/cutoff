@@ -17,7 +17,7 @@ def sweepelectron():
   mol, wf, to_opt, freeze = wavefunction() 
   eacc = EnergyAccumulator(mol)
   transform = LinearTransform(wf.parameters, to_opt, freeze)
-  pgrad = PGradTransform(eacc, transform, 0)
+  pgrad = PGradTransform(eacc, transform, 1e-20)
 
   #Initial coords
   configs = pyqmc.initial_guess(mol, 1).configs[:,:,:]
@@ -33,12 +33,11 @@ def sweepelectron():
     shifted_configs = OpenConfigs(new_configs)
     wfval = wf.recompute(shifted_configs)
     d = pgrad(shifted_configs, wf)
-
     small_df = pd.DataFrame({
       'ke':[d['ke'][0]],
       'total':[d['total'][0]],
-      'dppsi':[d['dppsi'][0][-1]],
-      'dpH'  :[d['dpH'][0][-1]],
+      'dppsi':[d['dppsi'][0][0]],
+      'dpH'  :[d['dpH'][0][0]],
       'wfval':[wfval[0][0]*np.exp(wfval[1][0])],
       'ycoord': i,
       'configs':[copy.deepcopy(new_configs)],
@@ -113,9 +112,9 @@ def locatenode(df, scale):
 if __name__ == '__main__':
   """First sweep to make sure you have a potential node""" 
   #Run these first, once you hit a node DON'T run them again!
-  sweepdf = sweepelectron()
-  sweepdf.to_json('sweepelectron.json')
-  vizsweep(sweepdf)
+  #sweepdf = sweepelectron()
+  #sweepdf.to_json('sweepelectron.json')
+  #vizsweep(sweepdf)
 
   """Pinpoint the location of the node"""
   sweepdf = pd.read_json('sweepelectron.json')
@@ -124,6 +123,6 @@ if __name__ == '__main__':
   """Visualize the node"""
   cutoffs = [1e-5, 1e-3, 1e-2, 1e-1]
   viznode(node_coords, node_grad, cutoffs)
-
+  
   """Integrate across the node"""
   integratenode(node_coords, node_grad, poly=1e-2, integ_range = 0.1) 
