@@ -9,7 +9,7 @@ from wavefunction import wavefunction
 
 if __name__ == '__main__':
   nconfig_per_core = 100
-  ncore = 20
+  ncore = 2
   nsteps = 100000
 
   cutoffs = list(np.logspace(-8, -1, 20)) + list([0.05,0.075, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.20])
@@ -33,5 +33,5 @@ if __name__ == '__main__':
       accumulators = {"pgrad": pgrad}, 
       nsteps_per=100,
       nsteps=nsteps,
-      hdf_file='dedp_vmc.hdf5'
+      hdf_file='dedp_vmc_local.hdf5'
   )
