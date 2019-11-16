@@ -72,6 +72,9 @@ def wavefunction(return_mf = False):
     freeze = {'wf1det_coeff': np.ones(freeze['wf1det_coeff'].shape).astype(bool)}
     freeze['wf1det_coeff'][10] = False
 
+    wf.parameters['wf1det_coeff'] *= 0
+    wf.parameters['wf1det_coeff'][[0,10]] = 1./np.sqrt(2.)
+
     if(return_mf): return mol, mf, mc, wf, to_opt, freeze
     else: return mol, wf, to_opt, freeze
 
