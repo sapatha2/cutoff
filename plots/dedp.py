@@ -70,7 +70,7 @@ if __name__ == '__main__':
     '''
 
     #Evaluate errors after reblocking
-    steps_per_block = 8000
+    steps_per_block = e.shape[0]/100
     reblocked_e = np.array(_reblock(e, e.shape[0]/steps_per_block))
     reblocked_dppsi = np.array(_reblock(dppsi, dppsi.shape[0]/steps_per_block))
     reblocked_dpH = np.array([np.array(_reblock(dpH[:,i], dpH.shape[0]/steps_per_block))
