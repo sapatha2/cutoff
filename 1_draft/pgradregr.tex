@@ -1,7 +1,23 @@
 \documentclass{article}
+\usepackage{amsmath}
+
 \begin{document}
 \section{Introduction}
-Accurate and stable evaluation of the parameter gradient of the energy expectation value, $\partial E/\partial p$, is an integral component of variational Monte Carlo (VMC) wave function optimization techniques \cite{PhysRevB.64.024512, doi:10.1063/1.1604379, Toulouse2007}.
+Accurate and stable stochastic estimation of the parameter gradient of the energy expectation value, $\partial E/\partial p$, is an integral component of variational Monte Carlo (VMC) wave function energy optimization techniques \cite{PhysRevB.64.024512, doi:10.1063/1.1604379, Toulouse2007}.
+Within these techniques, wave function parameters are updated iteratively, with the estimate of $\partial E/\partial p$ used in determining updates.
+If the estimation is inaccurate, having a large bias, the final converged wave function is not guaranteed to be the lowest energy wave function in the parameterization space.
+If the estimation is unstable, having a large variance, the updates will have large statistical fluctuations, decreasing efficiency.
+An appropriate estimator for $\partial E/ \partial p$ should then have both low bias and variance, leading to efficient optimization and a final wave function with minimum energy in the parameterization space.
+
+A useful starting point is the naive Monte Carlo estimator for $\partial E/\partial p$ evaluated on a wave function $\Psi(p, R)$ 
+\begin{equation}
+\hat{\theta}^M \equiv \frac{2}{M}\sum_{i=1}^M \frac{\hat{H}\Psi}{\Psi}(R_i) \frac{\partial_p \Psi}{\Psi}(R_i) - \frac{2}{M-1} \sum_{i=1}^M \Big(\frac{1}{M} \sum_{j=1}^M \frac{\hat{H}\Psi}{\Psi}(R_j)\Big)\frac{\partial_p \Psi}{\Psi}(R_i). \label{eq:naive_estimator}
+\end{equation}
+The sums are over $M$ configurations drawn from the distribution $|\Psi(p, R)|^2$, and $\hat{H}$ is the Hamiltonian operator.
+While unbiased, $\hat{\theta}^M$ has a well documented divergent variance \cite{Avella} due to the first term in \eqref{eq:naive_estimator}.
+This infinite variance leads to inefficient optimization and has prompted a search for low-bias, finite variance estimators of $\partial E/\partial p$.
+
+Current low-bias, finite variance estimation techniques involve complicated guiding or auxiliary wave functions, such as a reweighting scheme \cite{Avella, Attaccalite2008} or the improved estimators of Assaraf and Caffarel \cite{doi:10.1063/1.1286598, Assaraf2003}.
 
 \section{Regularized estimator}
 \section{Application to LiH molecule}
