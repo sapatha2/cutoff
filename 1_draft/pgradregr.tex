@@ -14,10 +14,18 @@ A useful starting point is the naive Monte Carlo estimator for $\partial E/\part
 \hat{\theta}^M \equiv \frac{2}{M}\sum_{i=1}^M \frac{\hat{H}\Psi}{\Psi}(R_i) \frac{\partial_p \Psi}{\Psi}(R_i) - \frac{2}{M-1} \sum_{i=1}^M \Big(\frac{1}{M} \sum_{j=1}^M \frac{\hat{H}\Psi}{\Psi}(R_j)\Big)\frac{\partial_p \Psi}{\Psi}(R_i). \label{eq:naive_estimator}
 \end{equation}
 The sums are over $M$ configurations drawn from the distribution $|\Psi(p, R)|^2$, and $\hat{H}$ is the Hamiltonian operator.
-While unbiased, $\hat{\theta}^M$ has a well documented divergent variance \cite{Avella} due to the first term in \eqref{eq:naive_estimator}.
-This infinite variance leads to inefficient optimization and has prompted a search for low-bias, finite variance estimators of $\partial E/\partial p$.
+While unbiased, $\hat{\theta}^M$ has a well documented divergent variance \cite{Avella} due to the behavior of the first term in \eqref{eq:naive_estimator} near the nodes of $\Psi$.
+This infinite variance leads to inefficient optimization and has prompted a search for zero bias, finite variance estimators of $\partial E/\partial p$.
 
-Current low-bias, finite variance estimation techniques involve complicated guiding or auxiliary wave functions, such as a reweighting scheme \cite{Avella, Attaccalite2008} or the improved estimators of Assaraf and Caffarel \cite{doi:10.1063/1.1286598, Assaraf2003}.
+Current zero bias, finite variance estimation techniques involve guiding or auxiliary wave functions, such as a reweighting scheme \cite{Avella, Attaccalite2008} or the improved estimators of Assaraf and Caffarel \cite{doi:10.1063/1.1286598, Assaraf2003}.
+While zero bias is achieved for arbitrary guiding wave functions $\Psi_G$, finite variance is only acquired with specially tuned guiding functions which cancel the divergences in \eqref{eq:naive_estimator} near the nodes of $\Psi$.
+A general form for $\Psi_G$ which yields a finite-variance estimate of $\partial E/\partial p$ is provided by Umrigar \textbf{ref} where $\Psi_G$ differs from $\Psi$ only near the nodes, the prior having a finite value.
+Still unresolved, however, is a zero bias, finite variance estimator for \eqref{eq:naive_estimator} that does not carry the luggage of a guiding function.
+
+We derive and test a simple regularized estimator for $\partial E/\partial p$ which has finite variance, can be extrapolated to zero bias, and does not rely on guiding wave functions.
+Instead, the divergence in the first term of \eqref{eq:naive_estimator} is suppressed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(p, R)$. 
+We present rigorous mathematical proofs for the scalings of the variance and bias of the regularized estimator with $\epsilon$, and provide an algorithm for the zero bias extrapolation of the estimate.
+The mathematical predictions and extrapolation procedure are then tested in evaluating $\partial E/\partial p$ for a trial wave function on the LiH molecule.
 
 \section{Regularized estimator}
 \section{Application to LiH molecule}
