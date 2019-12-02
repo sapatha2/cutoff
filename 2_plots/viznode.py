@@ -67,8 +67,8 @@ def viznode(node_coords, node_grad, cutoffs, vizfile='viznode.pdf'):
       ax[0].plot(x, dpH *  (val[0]*np.exp(val[1]))**2, '-', label = r'$10^{'+str(int(np.log10(cutoff)))+'}$')
       ax[1].plot(x, np.log10(dpH**2 * (val[0]*np.exp(val[1]))**2), '-')
 
-  ax[0].set_ylabel(r'$Q*f_\epsilon |\Psi|^2$')
-  ax[1].set_ylabel(r'log$_{10}(Q^2* f_\epsilon^2|\Psi|^2)$')
+  ax[0].set_ylabel(r'$\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon |\Psi|^2$')
+  ax[1].set_ylabel(r'log$_{10}((\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi})^2 f_\epsilon^2|\Psi|^2)$')
   ax[1].set_xlabel(r'$x$ (Bohr)')
   ax[0].set_xlim((-max(x) - 0.02,max(x) + 0.02))
   ax[1].set_xlim((-max(x) - 0.02,max(x) + 0.02))
