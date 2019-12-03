@@ -12,7 +12,7 @@ An appropriate estimator for $\partial E/ \partial p$ should then have both low 
 
 A useful starting point is the naive Monte Carlo estimator for $\partial E/\partial p$ evaluated on a wave function $\Psi(\vec{p}, \vec{R})$ 
 \begin{equation}
-\hat{\theta}^M \equiv \frac{2}{M}\sum_{i=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_i) \frac{\partial_p \Psi}{\Psi}(\vec{R}_i) - \frac{2}{M-1} \sum_{i=1}^M \Big(\frac{1}{M} \sum_{j=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_j)\Big)\frac{\partial_p \Psi}{\Psi}(\vec{R}_i). \label{eq:naive_estimator}
+\hat{\theta}^M \equiv \frac{2}{M-1}\Bigg(\sum_{i=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_i) \frac{\partial_p \Psi}{\Psi}(\vec{R}_i) - \sum_{i=1}^M \Big(\frac{1}{M} \sum_{j=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_j)\Big)\frac{\partial_p \Psi}{\Psi}(\vec{R}_i) \Bigg). \label{eq:naive_estimator}
 \end{equation}
 The sums are over $M$ configurations drawn from the distribution $|\Psi(\vec{p}, \vec{R})|^2$, and $\hat{H}$ is the Hamiltonian operator.
 \textbf{While unbiased, $\hat{\theta}^M$ has a divergent variance \cite{Avella} due to the behavior of the first term in \eqref{eq:naive_estimator} near the nodes of $\Psi$.}
@@ -41,7 +41,7 @@ Since the integration domain includes the nodal surface of $\Psi$, the $1/|\vec{
 
 \textbf{Multiplying the first term in the naive estimator \eqref{eq:naive_estimator} by a function $f_\epsilon$ yields a finite variance estimator of $\partial E/\partial p$}
 \begin{equation}
-\hat{\theta_\epsilon}^M \equiv \frac{2}{M}\sum_{i=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_i)\frac{\partial_p \Psi}{\Psi}(\vec{R}_i) f_\epsilon(\vec{R}_i) - \frac{2}{M-1} \sum_{i=1}^M \Big(\frac{1}{M} \sum_{j=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_j)\Big)\frac{\partial_p \Psi}{\Psi}(\vec{R}_i), \label{eq:regularized_estimator}
+\hat{\theta_\epsilon}^M \equiv \frac{2}{M-1} \Bigg(\sum_{i=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_i)\frac{\partial_p \Psi}{\Psi}(\vec{R}_i) f_\epsilon(\vec{R}_i) - \sum_{i=1}^M \Big(\frac{1}{M} \sum_{j=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_j)\Big)\frac{\partial_p \Psi}{\Psi}(\vec{R}_i)\Bigg), \label{eq:regularized_estimator}
 \end{equation}
 where 
 \begin{equation}
@@ -66,6 +66,7 @@ This is a consequence of the non-dimensionality of $f_\epsilon$ which ensures th
 \end{equation}
 As $\epsilon \rightarrow 0$, the integration domain is very near the nodal surface and the integrand can be Taylor expanded to lowest order in $|\vec{R}-\vec{N}|$. 
 The Taylor expansion yields an integrand $|\vec{x}/\epsilon|^{n-2}/\epsilon^2$ and results in an integral which scales as $O(1/\epsilon)$ to lowest order in $\epsilon$.
+As the integrand is even, all other contributions to the variance scale as $O(\epsilon)$, meaning the leading order changes in the variance come directly from \eqref{eq:convergent_integral}.
 
 \textbf{Unfortunately, the regularized estimator results in a linear-order biased estimation of $\partial E/\partial p$ for a general function $f_\epsilon$ satisfying \eqref{eq:regularizing_function}.}
 The bias in \eqref{eq:regularized_estimator} results only from the first term and is written as 
