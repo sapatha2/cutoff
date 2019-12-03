@@ -112,33 +112,31 @@ Third, calculate the regularized estimate \eqref{eq:regularized_estimator} on th
 Fourth, fit a function $a\epsilon^3 + b$ to the estimated values; the intercept $b$ is then a zero bias estimate for $\partial E/\partial p.$
 
 \section{Application to LiH molecule}
-\textbf{We test the effectiveness of the regularized estimator in evaluating $\partial E/\partial p$ for the determinantal coefficients of a multi-Slater Jastrow (MSJ) wave function for the LiH molecule.}
-A full configuration interaction expansion over Li 1s, 2s, 2p and H 1s orbitals was chosen for the multi-Slater expansion.
-The orbitals were constructed from a restricted open-shell Hartree Fock calculation using a correlation consistent quadruple-zeta valence basis set \textbf{ref}.
+\textbf{We verify the predicted mathematical behavior of $\hat{\theta}_\epsilon^M$ by using it to estimate $\partial E/\partial p$ for a determinantal coefficient of a multi-Slater Jastrow wave function for the LiH molecule.}
+A full configuration interaction (CI) expansion over Li 1s, 2s, 2p and H 1s orbitals was chosen for the multi-Slater expansion.
+The orbitals were constructed from a restricted open-shell Hartree Fock (ROHF) calculation using a correlation consistent quadruple-zeta valence basis set \textbf{ref}.
 An unoptimized 2-body Jastrow function with electron-electron cusp conditions of the form in \textbf{ref} was used.
-The wave function is meant to be a typical starting point for VMC optimization of the Jastrow and determinantal coefficients, and a useful playground to test the regularized estimator when evaluating $\partial E/\partial p$ for determinantal coefficients.
+The ROHF and CI calculations were done using the PySCF package \textbf{ref} and all QMC calculations were carried out using PyQMC \textbf{ref}.
 
-\textbf{Figure 1 illustrates how the regularized estimator removes the divergence present in the integral \eqref{eq:divergent_integral} across a node of $\Psi$ when $p$ is a determinantal coefficient }
-In the lower plot the logarithm of the regularized integrand \eqref{eq:convergent_integral} is shown for various $\epsilon$ along a path normal to a node of the wave function $\Psi$.
-The normal coordinate to the node is $x$.
+\textbf{We begin by verifying the core claim of the regularized integrand \eqref{eq:convergent_integral} being finite across the nodes of $\Psi$ for any $\epsilon > 0$.}
+To do so, we evaluate the regularized integrand for various $\epsilon$ along a path which passes through a node $N$, $R(x) = N + x \nabla \Psi(N)/|\nabla \Psi(N)|$ with $x \in [-0.1, 0.1]$ Bohr.
+The results are shown in the lower plot of Figure 1.
 For all values of $\epsilon$, the value of the integrand is pushed to zero at the node, removing the divergence in the integral.
-The sharp increase in the integrand near $x=0$ as $\epsilon$ decreases is indicative of the exponential increase in the value of this integrand as $\epsilon \rightarrow 0$.
-Shown in the upper figure is the first term in \eqref{eq:regularized_estimator} across the node, exhibiting no divergences.
+The sharp increase in the integrand near $x=0$ as $\epsilon$ decreases is indicative of the increase in the value of the integral, and hence estimator variance, as $\epsilon \rightarrow 0$.
+Shown in the upper plot is the first term in \eqref{eq:regularized_estimator} across the node, exhibiting no divergences.
 
 \textbf{By integrating across the normal coordinate $x$, the predicted $O(1/\epsilon)$, $O(\epsilon^3)$ scalings of the variance and bias are recovered, as shown in Figure 2.} 
 The integration for both the bias and variance are carried out for the path shown in Figure 1 from $x = -0.1$ to $0.1$ Bohr and normalized by a factor $\int |\Psi|^2 dR$ along that path.
-The blue dots correspond to the values of the integrals for different values of $\epsilon$ and the orange dashed lines are fits to the predicted scaling functions with respect to $\epsilon$.
 The predicted cubic bias is observed for six decades in $\epsilon$ while the exponential decrease in variance stands for four decades.
 The increase in the variance after $\epsilon = 10^{-2}$ occurs due to the breakdown of the assumption $\Psi(R) \sim \nabla(N) \cdot (R-N)$, resulting in a linear increase in variance with $\epsilon$.
-This change is not mirrored in the bias since the sub-leading order scaling with $\epsilon$ appears in the bias when the assumptions of $\hat{H}\Psi$ and $\partial_p \Psi \sim const$ break down.
+This change is not mirrored in the bias since the sub-leading order scaling with $\epsilon$ appears when the assumptions of $\hat{H}\Psi$ and $\partial_p \Psi \sim const$ break down.
 
-\textbf{In Figure 3 we demonstrate the zero bias, finite-variance extrapolation for $\partial E/\partial p$ using the regularized estimator.}
-The four step procedure outlined in the previous section was carried out.
-A standard VMC calculation with 200,000 steps and 2,000 configurations per step were first collected.
-Then $\partial E/\partial p$ was estimated using \eqref{eq:regularized_estimator} for $\epsilon$ between $10^{-1}$ Bohr and $10^{-5}$ Bohr, shown in the blue data points.
-Since the same configurations were used for each evaluation, the blue data points have a strong statistical correlation and the predicted $\epsilon^3$ bias is very clearly present, shown by the orange fit curve.
+\textbf{We conclude by carrying out the four step, finite-variance extrapolation for $\partial E/\partial p$ proposed in the previous section, shown in Figure 3.}
+First, a standard VMC calculation with 200,000 steps and 2,000 configurations per step was carried out.
+Then, $\partial E/\partial p$ was estimated using \eqref{eq:regularized_estimator} for $\epsilon$ between $10^{-1}$ Bohr and $10^{-5}$ Bohr using the VMC configurations, shown in the blue data points.
+Since the same configurations were used for each evaluation, the estimates have a strong statistical correlation and the predicted $\epsilon^3$ bias is clearly present, shown by the orange fit curve.
 The intercept of the fit curve is shown by the red star and is the zero-bias estimate of $\partial E/\partial p$; the variance can be deduced by the error bar of the blue data points, in this case 0.025 mHa.
-Note that the extrapolation is not strictly necessary as the bias is zero within statistical errors for small values of $\epsilon$, meaning that most practical calculations can be carried out for a fixed value of $\epsilon$ between $10^{-5}$ and $10^{-2}$ Bohr.
+As the bias is zero within statistical errors for small values of $\epsilon$, most practical calculations can be carried out for a fixed value of $\epsilon$ between $10^{-5}$ and $10^{-2}$ Bohr without extrapolation.
 
 \section{Conclusion}
 \textbf{Integral to the reliability of variational Monte Carlo wave function optimization methods is the finite variance estimation of $\partial E/\partial p$.}
