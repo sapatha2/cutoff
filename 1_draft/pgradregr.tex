@@ -1,10 +1,31 @@
-\documentclass{article}
+\documentclass[twocolumn]{revtex4-1}
 \usepackage{amsmath}
 \usepackage{mathtools}
 
+
 \begin{document}
+\title{A light weight regularization for wave function parameter gradients
+\\ in quantum Monte Carlo}
+
+\author{Shivesh Pathak}
+\email[]{sapatha2@illinois.edu}
+
+\author{Lucas K. Wagner}
+\email[]{lkwagner@illinois.edu}
+\affiliation{Department of Physics; University of Illinois at Urbana-Champaign}
+
+\date{\today}
+\begin{abstract}
+The parameter derivative of the expectation value of the energy, $\partial E/\partial p$, is a key ingredient in variational quantum Monte Carlo (VMC) wave function optimization methods.
+A naive Monte Carlo estimate of this derivative suffers from an infinite variance which inhibits the efficiency of optimization methods that rely on a stable estimate of the derivative.
+In this work, we derive a simple regularization of the naive estimator which is trivial to implement in existing VMC codes, has finite variance, and a negligible bias which can be extrapolated to zero bias with no extra cost.
+We use this estimator to construct an unbiased, finite variance estimation of $\partial E/\partial p$ for a multi-Slater-Jastrow trial wave function on the LiH molecule.
+As such, this regularized estimator stands stands as a light weight option for stable estimation of $\partial E/\partial p$ in VMC optimization techniques.
+\end{abstract}
+\maketitle 
+
 \section{Introduction}
-\textbf{Accurate and stable stochastic estimation of the parameter gradient of the energy expectation value, $\partial E/\partial p$, is an integral component of variational Monte Carlo (VMC) wave function energy optimization techniques \cite{PhysRevB.64.024512, doi:10.1063/1.1604379, Toulouse2007}.}
+Accurate and stable stochastic estimation of the parameter gradient of the energy expectation value, $\partial E/\partial p$, is an integral component of variational Monte Carlo (VMC) wave function energy optimization techniques \cite{PhysRevB.64.024512, doi:10.1063/1.1604379, Toulouse2007}.
 Within these techniques, wave function parameters are updated iteratively, with the estimate of $\partial E/\partial p$ used in determining updates.
 If the estimation is inaccurate, having a large bias, the final converged wave function is not guaranteed to be the lowest energy wave function in the parameterization space.
 If the estimation is unstable, having a large variance, the updates will have large statistical fluctuations, decreasing efficiency.
@@ -12,36 +33,41 @@ An appropriate estimator for $\partial E/ \partial p$ should then have both low 
 
 A useful starting point is the naive Monte Carlo estimator for $\partial E/\partial p$ evaluated on a wave function $\Psi(\vec{p}, \vec{R})$ 
 \begin{equation}
-\hat{\theta}^M \equiv \frac{2}{M-1}\Bigg(\sum_{i=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_i) \frac{\partial_p \Psi}{\Psi}(\vec{R}_i) - \sum_{i=1}^M \Big(\frac{1}{M} \sum_{j=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_j)\Big)\frac{\partial_p \Psi}{\Psi}(\vec{R}_i) \Bigg). \label{eq:naive_estimator}
+\begin{split}
+\hat{\theta}^M \equiv \frac{2}{M-1}\Bigg(\sum_{i=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_i) \frac{\partial_p \Psi}{\Psi}(\vec{R}_i)- \\ \sum_{i=1}^M \Big(\frac{1}{M} \sum_{j=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_j)\Big)\frac{\partial_p \Psi}{\Psi}(\vec{R}_i) \Bigg). 
+\end{split}
+\label{eq:naive_estimator}
 \end{equation}
 The sums are over $M$ configurations drawn from the distribution $|\Psi(\vec{p}, \vec{R})|^2$, and $\hat{H}$ is the Hamiltonian operator.
-\textbf{While unbiased, $\hat{\theta}^M$ has a divergent variance \cite{Avella} due to the behavior of the first term in \eqref{eq:naive_estimator} near the nodes of $\Psi$.}
+While unbiased, $\hat{\theta}^M$ has a divergent variance \cite{Avella} due to the behavior of the first term in \eqref{eq:naive_estimator} near the nodes of $\Psi$.
 This infinite variance leads to inefficient optimization and has prompted a search for zero bias, finite variance estimators of $\partial E/\partial p$.
 
-\textbf{Current zero bias, finite variance estimation techniques involve guiding or auxiliary wave functions, such as a reweighting scheme \cite{Avella, Attaccalite2008} or the improved estimators of Assaraf and Caffarel \cite{doi:10.1063/1.1286598, Assaraf2003}.}
+Current zero bias, finite variance estimation techniques involve guiding or auxiliary wave functions, such as a reweighting scheme \cite{Avella, Attaccalite2008} or the improved estimators of Assaraf and Caffarel \cite{doi:10.1063/1.1286598, Assaraf2003}.
 While zero bias is achieved for arbitrary guiding wave functions $\Psi_G$, finite variance is only acquired with specially tuned guiding functions which cancel the divergences in \eqref{eq:naive_estimator} near the nodes of $\Psi$.
 A general form for $\Psi_G$ which yields a finite-variance estimate of $\partial E/\partial p$ is provided by Umrigar \cite{doi:10.1063/1.4933112} where $\Psi_G$ differs from $\Psi$ only near the nodes, the prior having a finite value.
 Still unresolved is a zero bias, finite variance estimator for \eqref{eq:naive_estimator} without the luggage of a guiding wave function. 
 
-\textbf{We derive and test a simple regularized estimator for $\partial E/\partial p$ which has finite variance, can be extrapolated to zero bias, and does not rely on guiding wave functions.}
+We derive and test a simple regularized estimator for $\partial E/\partial p$ which has finite variance, can be extrapolated to zero bias, and does not rely on guiding wave functions.
 Instead, the divergence in the first term of \eqref{eq:naive_estimator} is suppressed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(\vec{p}, \vec{R})$. 
 We present rigorous mathematical proofs for the scalings of the variance and bias of the regularized estimator with $\epsilon$, and provide an algorithm for the zero bias extrapolation of the estimate.
 The mathematical predictions and extrapolation procedure are then tested in evaluating $\partial E/\partial p$ for a multi-Slater-Jastrow (MSJ) trial wave function on the LiH molecule.
 
 \section{Regularized estimator}
 As mentioned before, the naive estimator \eqref{eq:naive_estimator} suffers from an infinite variance. 
-\textbf{The divergent contribution to the variance arises from the evaluation of the integral
+The divergent contribution to the variance arises from the evaluation of the integral
 \begin{equation}
 \int \Big(\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p\Psi}{\Psi}\Big)^2 |\Psi|^2 dR.
 \label{eq:divergent_integral}
 \end{equation}
-when $\Psi$ is not an eigenstate of $\hat{H}$ and the parameter $p$ affects the nodes of $\Psi$, such as orbital or determinantal coefficients.}
+when $\Psi$ is not an eigenstate of $\hat{H}$ and the parameter $p$ affects the nodes of $\Psi$, such as orbital or determinantal coefficients.
 In this case, to lowest order in distance $|\vec{R}-\vec{N}|$ from a nodal point $\vec{N}$ of $\Psi$, $\hat{H}\Psi$ and $\partial_p \Psi \sim const$ and $\Psi \sim \nabla \Psi(\vec{N}) \cdot (\vec{R} - \vec{N})$, leading to the integrand in \eqref{eq:divergent_integral} behaving as $1/|\vec{R}-\vec{N}|^2$ near the node.
 Since the integration domain includes the nodal surface of $\Psi$, the $1/|\vec{R}-\vec{N}|^2$ behavior of the integrand as $|\vec{R}-\vec{N}|\rightarrow 0$ leads to a divergent integral.
 
-\textbf{Multiplying the first term in the naive estimator \eqref{eq:naive_estimator} by a function $f_\epsilon$ yields a finite variance estimator of $\partial E/\partial p$}
+Multiplying the first term in the naive estimator \eqref{eq:naive_estimator} by a function $f_\epsilon$ yields a finite variance estimator of $\partial E/\partial p$
 \begin{equation}
-\hat{\theta_\epsilon}^M \equiv \frac{2}{M-1} \Bigg(\sum_{i=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_i)\frac{\partial_p \Psi}{\Psi}(\vec{R}_i) f_\epsilon(\vec{R}_i) - \sum_{i=1}^M \Big(\frac{1}{M} \sum_{j=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_j)\Big)\frac{\partial_p \Psi}{\Psi}(\vec{R}_i)\Bigg), \label{eq:regularized_estimator}
+\begin{split}
+\hat{\theta_\epsilon}^M \equiv \frac{2}{M-1} \Bigg(\sum_{i=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_i)\frac{\partial_p \Psi}{\Psi}(\vec{R}_i) f_\epsilon(\vec{R}_i) - \\ \sum_{i=1}^M \Big(\frac{1}{M} \sum_{j=1}^M \frac{\hat{H}\Psi}{\Psi}(\vec{R}_j)\Big)\frac{\partial_p \Psi}{\Psi}(\vec{R}_i)\Bigg), \label{eq:regularized_estimator}
+\end{split}
 \end{equation}
 where 
 \begin{equation}
@@ -53,13 +79,15 @@ f_\epsilon(\vec{R}) = \begin{cases}
 \end{equation} 
 The previously divergent contribution to the estimator variance \eqref{eq:divergent_integral} is replaced by a finite integral, verified by piecewise integration
 \begin{equation}
-\int \Big(\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p\Psi}{\Psi}\Big)^2 f_\epsilon^2 |\Psi|^2 dR =\int_{|x/\epsilon|\geq 1} \Big(\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p\Psi}{\Psi}\Big)^2 |\Psi|^2 dR + \int_{|x/\epsilon|< 1} \Big(\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p\Psi}{\Psi}\Big)^2 f_\epsilon^2 |\Psi|^2 dR,
+\begin{split}
+\int \Big(\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p\Psi}{\Psi}\Big)^2 f_\epsilon^2 |\Psi|^2 dR = \int_{|x/\epsilon|\geq 1} \Big(\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p\Psi}{\Psi}\Big)^2 |\Psi|^2 dR +\\ \int_{|x/\epsilon|< 1} \Big(\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p\Psi}{\Psi}\Big)^2 f_\epsilon^2 |\Psi|^2 dR,
+\end{split}
 \label{eq:convergent_integral}
 \end{equation}
 Since $\Psi = 0$ only occurs when $\vec{x} = 0$, the integral for $|\vec{x}/\epsilon|\geq 1$ completely excludes the nodal surface of $\Psi$, and is finite. 
 Further, since $|\vec{x}/\epsilon| \sim |\nabla\Psi(\vec{N}) \cdot (\vec{R}-\vec{N})|/\epsilon|\nabla  \Psi(\vec{N})|$ as $|\vec{R} - \vec{N}| \rightarrow 0$, the integrand arbitrarily close to the nodal surface is a constant, meaning the second integral for $|\vec{x}/\epsilon| < 1$ is also finite.
 
-\textbf{The variance of \eqref{eq:regularized_estimator} is not only finite, but decreases exponentially as $1/\epsilon$ to lowest order in $\epsilon$ for any choice of $f_\epsilon$ satisfying the conditions in \eqref{eq:regularizing_function}.}
+The variance of \eqref{eq:regularized_estimator} is not only finite, but decreases exponentially as $1/\epsilon$ to lowest order in $\epsilon$ for any choice of $f_\epsilon$ satisfying the conditions in \eqref{eq:regularizing_function}.
 This is a consequence of the non-dimensionality of $f_\epsilon$ which ensures that all contributions to the $|\vec{x}/\epsilon|< 1$ integral in \eqref{eq:convergent_integral} take the form:
 \begin{equation}
 \int_{|\vec{x}/\epsilon|< 1} \Big(\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p\Psi}{\Psi}\Big)^2 |\frac{\vec{x}}{\epsilon}|^n |\Psi|^2 dR, n\geq 2
@@ -68,7 +96,7 @@ As $\epsilon \rightarrow 0$, the integration domain is very near the nodal surfa
 The Taylor expansion yields an integrand $|\vec{x}/\epsilon|^{n-2}/\epsilon^2$ and results in an integral which scales as $O(1/\epsilon)$ to lowest order in $\epsilon$.
 As the integrand is even, all other contributions to the variance scale as $O(\epsilon)$, meaning the leading order changes in the variance come directly from \eqref{eq:convergent_integral}.
 
-\textbf{Unfortunately, the regularized estimator results in a linear-order biased estimation of $\partial E/\partial p$ for a general function $f_\epsilon$ satisfying \eqref{eq:regularizing_function}.}
+Unfortunately, the regularized estimator results in a linear-order biased estimation of $\partial E/\partial p$ for a general function $f_\epsilon$ satisfying \eqref{eq:regularizing_function}.
 The bias in \eqref{eq:regularized_estimator} results only from the first term and is written as 
 \begin{equation}
 \text{Bias: } \int_{|\vec{x}/\epsilon|< 1} \Big(\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p\Psi}{\Psi}\Big) (f_\epsilon - 1)|\Psi|^2 dR.
@@ -79,7 +107,7 @@ This yields an integrand, to lowest order in $\epsilon$, $c|\vec{x}/\epsilon| - 
 Carrying out the integration yields a bias that scales as $O(\epsilon)$ to lowest order in $\epsilon$.
 The linear bias is inhibitive to zero bias extrapolation as the estimation bias is present for any value of $\epsilon$ while the variance increases exponentially with $\epsilon \rightarrow 0$.
 
-\textbf{A simple normalization condition on $f_\epsilon$ ensures a bias of $O(\epsilon^3)$, allowing for efficient extrapolation to zero bias.}
+A simple normalization condition on $f_\epsilon$ ensures a bias of $O(\epsilon^3)$, allowing for efficient extrapolation to zero bias.
 The expression for the bias \eqref{eq:estimator_bias} as $\epsilon \rightarrow 0$ after carrying out the necessary Taylor expansions is
 $$
 \lim_{\epsilon\rightarrow 0}\text{Bias} =  A \int_{|\vec{x}/\epsilon|< 1} (f_\epsilon - 1) dR.
@@ -93,7 +121,7 @@ As such, the linear order bias can be removed by enforcing a normalization condi
 The leading order contribution to the bias arises from the breakdown of the Taylor approximation $\hat{H}\Psi$ and $\partial_p \Psi \sim const$, and results in a bias $O(\epsilon^3)$.
 The quadratic contribution to the bias is zero as $f_\epsilon$ is even in $|\vec{R}-\vec{N}|$.
 
-\textbf{A final set of continuity and smoothness conditions on $f_\epsilon$ at $|\vec{x}/\epsilon| = 1$ reduce the magnitude of the cubic bias.}
+A final set of continuity and smoothness conditions on $f_\epsilon$ at $|\vec{x}/\epsilon| = 1$ reduce the magnitude of the cubic bias.
 These two conditions can be written as 
 \begin{equation}
 f(1) = 1, \nabla f(1) = 0.
@@ -106,33 +134,48 @@ f_\epsilon(|\frac{\vec{x}}{\epsilon}|) = 7(\frac{\vec{x}}{\epsilon})^6 - 15(\fra
 \end{equation}
 Therefore, the regularized estimator \eqref{eq:regularized_estimator} with $f_\epsilon$ defined as \eqref{eq:final_regularization} serves as a finite variance estimator for $\partial E/\partial p$ which has a leading order cubic bias in $\epsilon$.
 
-\textbf{With the regularized estimator in hand, the finite variance, zero bias, extrapolated estimation for $\partial E/\partial p$ using can be carried out in four steps.}
+With the regularized estimator in hand, the finite variance, zero bias, extrapolated estimation for $\partial E/\partial p$ using can be carried out in four steps.
 First, conduct a standard VMC calculation with probability distribution $|\Psi|^2$ to the generate configurations $\{\vec{R}_i\}$ needed for estimation.
 Second, evaluate the distance $|\vec{x}_i|$ as defined in \eqref{eq:regularizing_function} for each configuration $\vec{R}_i$.
 Third, calculate the regularized estimate \eqref{eq:regularized_estimator} on the set of configurations for a sequence of increasing $\epsilon$.
 Fourth, fit a function $a\epsilon^3 + b$ to the estimated values; the intercept $b$ is then a zero bias estimate for $\partial E/\partial p.$
 
 \section{Application to LiH molecule}
-\textbf{We verify the predicted mathematical behavior of $\hat{\theta}_\epsilon^M$ by using it to estimate $\partial E/\partial p$ for a determinantal coefficient of a multi-Slater Jastrow wave function for the LiH molecule.}
+We verify the predicted mathematical behavior of $\hat{\theta}_\epsilon^M$ by using it to estimate $\partial E/\partial p$ for a determinantal coefficient of a multi-Slater Jastrow wave function for the LiH molecule.
 A full configuration interaction (CI) expansion over Li 1s, 2s, 2p and H 1s orbitals was chosen for the multi-Slater expansion.
 The orbitals were constructed from a restricted open-shell Hartree Fock (ROHF) calculation using a correlation consistent quadruple-zeta valence basis set \cite{doi:10.1063/1.456153}\textbf{•}.
 An unoptimized 2-body Jastrow function with electron-electron cusp conditions of the form in \cite{Wagner2009} was used.
-The ROHF and CI calculations were done using the PySCF package \cite{PYSCF} and all QMC calculations were carried out using PyQMC \textbf{ref}.
+The ROHF and CI calculations were done using the PySCF package \cite{PYSCF} and all QMC calculations were carried out using PyQMC.
 
-\textbf{We begin by verifying the core claim of the regularized integrand \eqref{eq:convergent_integral} being finite across the nodes of $\Psi$ for any $\epsilon > 0$.}
+\begin{figure}
+\includegraphics[width=1.0\columnwidth]{../2_plots/viznode.pdf}
+\caption{$\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon$ and logarithm $(\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon)^2$, plotted against the normal coordinate $x$ from a node of $\Psi$. Curve colors correspond to different values of $\epsilon$ ranging from $10^{-1}$ to $10^{-8}$ Bohr.}
+\end{figure}
+
+\begin{figure}
+\includegraphics{../2_plots/integratenode.pdf}
+\caption{Scaled bias and variance of $\frac{\hat{H}\Psi \partial_p \Psi}{\Psi^2}$ evaluated by numerical integration from $r = -0.1$ to $r = 0.1$ across the node in Figure 1. The blue dots are the numerically integrated values and the orange curves indicate best fits to the functions $a\epsilon^3$ and $b + c/\epsilon$ for the bias and variance, respectively.}
+\end{figure}
+
+\begin{figure}
+\includegraphics{../2_plots/dedp.pdf}
+\caption{Zero bias, finite variance extrapolation for $\partial E/\partial p$ using the regularized estimator. The blue points are evaluated using VMC, the orange curve is a fit to $a + b\epsilon^3$, and the red star denotes the extrapolated estimation. }
+\end{figure}
+
+We begin by verifying the core claim of the regularized integrand \eqref{eq:convergent_integral} being finite across the nodes of $\Psi$ for any $\epsilon > 0$.
 To do so, we evaluate the regularized integrand for various $\epsilon$ along a path which passes through a node $\vec{N}$, $\vec{R}(x) = \vec{N} + x \nabla \Psi(\vec{N})/|\nabla \Psi(\vec{N})|$ with $x \in [-0.1, 0.1]$ Bohr.
 The results are shown in the lower plot of Figure 1.
 For all values of $\epsilon$, the value of the integrand is pushed to zero at the node, removing the divergence in the integral.
 The sharp increase in the integrand near $x=0$ as $\epsilon$ decreases is indicative of the increase in the value of the integral, and hence estimator variance, as $\epsilon \rightarrow 0$.
 Shown in the upper plot is the first term in \eqref{eq:regularized_estimator} across the node, exhibiting no divergences.
 
-\textbf{By integrating across the normal coordinate $x$, the predicted $O(1/\epsilon)$, $O(\epsilon^3)$ scalings of the variance and bias are recovered, as shown in Figure 2.} 
+By integrating across the normal coordinate $x$, the predicted $O(1/\epsilon)$, $O(\epsilon^3)$ scalings of the variance and bias are recovered, as shown in Figure 2.
 The integration for both the bias and variance are carried out for the path shown in Figure 1 from $x = -0.1$ to $0.1$ Bohr and normalized by a factor $\int |\Psi|^2 dR$ along that path.
 The predicted cubic bias is observed for six decades in $\epsilon$ while the exponential decrease in variance stands for four decades.
 The increase in the variance after $\epsilon = 10^{-2}$ occurs due to the breakdown of the assumption $\Psi(\vec{R}) \sim \nabla(\vec{N}) \cdot (\vec{R}-\vec{N})$, resulting in a linear increase in variance with $\epsilon$.
 This change is not mirrored in the bias since the sub-leading order scaling with $\epsilon$ appears when the assumptions of $\hat{H}\Psi$ and $\partial_p \Psi \sim const$ break down.
 
-\textbf{We conclude by carrying out the four step, finite-variance extrapolation for $\partial E/\partial p$ proposed in the previous section, shown in Figure 3.}
+We conclude by carrying out the four step, finite-variance extrapolation for $\partial E/\partial p$ proposed in the previous section, shown in Figure 3.
 First, a standard VMC calculation with 200,000 steps and 2,000 configurations per step was carried out.
 Then, $\partial E/\partial p$ was estimated using \eqref{eq:regularized_estimator} for $\epsilon$ between $10^{-1}$ Bohr and $10^{-5}$ Bohr using the VMC configurations, shown in the blue data points.
 Since the same configurations were used for each evaluation, the estimates have a strong statistical correlation and the predicted $\epsilon^3$ bias is clearly present, shown by the orange fit curve.
@@ -140,37 +183,16 @@ The intercept of the fit curve is shown by the red star and is the zero-bias est
 As the bias is zero within statistical errors for small values of $\epsilon$, most practical calculations can be carried out for a fixed value of $\epsilon$ between $10^{-5}$ and $10^{-2}$ Bohr without extrapolation.
 
 \section{Conclusion}
-\textbf{Integral to the reliability of variational Monte Carlo wave function optimization methods is the finite variance estimation of $\partial E/\partial p$.}
+Integral to the reliability of variational Monte Carlo wave function optimization methods is the finite variance estimation of $\partial E/\partial p$.
 Within these techniques, wave function parameters are updated iteratively, with the estimate of $\partial E/\partial p$ used in determining updates.
 If the estimation is inaccurate, having a large bias, the final converged wave function is not guaranteed to be the lowest energy wave function in the parameterization space.
 If the estimation is unstable, having a large variance, the updates will have large statistical fluctuations, decreasing efficiency.
 While the naive Monte Carlo estimator for $\partial E/\partial p$ is unbiased, it has an infinite variance, prompting a search for finite variance estimators for the quantity.
 
-\textbf{In this work, we derive and test a simple regularized estimator for $\partial E/\partial p$ which has finite variance and can be extrapolated to zero bias.}
+In this work, we derive and test a simple regularized estimator for $\partial E/\partial p$ which has finite variance and can be extrapolated to zero bias.
 The divergent variance present in the naive Monte Carlo estimator is suppressed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(\vec{p}, \vec{R})$. 
 We prove that the regularized estimator manages a finite variance by incurring a cubic bias which can be efficiently extrapolated to zero bias.
 The extrapolation is carried out, and a finite variance, zero-bias estimate of $\partial E/\partial p$ is evaluated for a determinantal coefficient in a trial wave function for the LiH molecule.
-
-
-\section{Figures}
-\begin{figure*}
-\centering
-\includegraphics{../2_plots/viznode.pdf}
-\caption{$\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon$ and logarithm $(\frac{\hat{H}\Psi}{\Psi}\frac{\partial_p \Psi}{\Psi} f_\epsilon)^2$, plotted against the normal coordinate $x$ from a node of $\Psi$. Curve colors correspond to different values of $\epsilon$ ranging from $10^{-1}$ to $10^{-8}$ Bohr.}
-\end{figure*}
-
-\begin{figure*}
-\centering
-\includegraphics{../2_plots/integratenode.pdf}
-\caption{Scaled bias and variance of $\frac{\hat{H}\Psi \partial_p \Psi}{\Psi^2}$ evaluated by numerical integration from $r = -0.1$ to $r = 0.1$ across the node in Figure 1. The blue dots are the numerically integrated values and the orange curves indicate best fits to the functions $a\epsilon^3$ and $b + c/\epsilon$ for the bias and variance, respectively.}
-\end{figure*}
-
-\begin{figure*}
-\centering
-\includegraphics{../2_plots/dedp.pdf}
-\caption{Zero bias, finite variance extrapolation for $\partial E/\partial p$ using the regularized estimator. The blue points are evaluated using VMC, the orange curve is a fit to $a + b\epsilon^3$, and the red star denotes the extrapolated estimation. }
-\end{figure*}
-\pagebreak
 
 \bibliographystyle{unsrt}
 \bibliography{pgradregr}
