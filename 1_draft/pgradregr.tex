@@ -26,6 +26,9 @@ As such, this regularized estimator stands stands as a light weight option for s
 \maketitle 
 
 \section{Introduction}
+
+\lucas{Typically equations are referenced as Eqn~\ref{eq:convergent_integral}; you've done something else here. } 
+
 Accurate and stable stochastic estimation of the parameter gradient of the energy expectation value, $\partial E/\partial p$,\lucas{define $p$. In general, I think you may need to build this up a little more and explain the problem.} is an integral component of variational Monte Carlo (VMC) wave function energy optimization techniques \cite{PhysRevB.64.024512, doi:10.1063/1.1604379, Toulouse2007, Umrigar2005, Umrigar2007, Toulouse2008}.
 Within these techniques, wave function parameters are updated iteratively, with the estimate of $\partial E/\partial p$ used in determining updates.
 If the estimation is inaccurate, having a large bias, the final converged wave function is not guaranteed to be the lowest energy wave function in the parameterization space.
@@ -152,7 +155,7 @@ Fourth, fit a function $a\epsilon^3 + b$ to the estimated values; the intercept 
 We verify the predicted mathematical behavior of $\hat{\theta}_\epsilon^M$ by using it to estimate $\partial E/\partial p$ for a determinantal coefficient of a multi-Slater Jastrow wave function for the LiH molecule.
 A full configuration interaction (CI) expansion over Li 1s, 2s, 2p and H 1s orbitals was chosen for the multi-Slater expansion.
 The orbitals were constructed from a restricted open-shell Hartree Fock (ROHF) calculation using a correlation consistent quadruple-zeta valence basis set \cite{doi:10.1063/1.456153}\textbf{•}.
-An unoptimized 2-body Jastrow function with electron-electron cusp conditions of the form in \cite{Wagner2009} was used.
+An unoptimized 2-body Jastrow function with electron-electron cusp conditions of the form in \cite{Wagner2009} was used.\lucas{This seems to imply that you did not optimize the Jastrow. You should just write out the wave function ansatz and indicate what parameters were optimized.}
 The ROHF and CI calculations were done using the PySCF package \cite{PYSCF} and all QMC calculations were carried out using PyQMC \cite{pyqmc}.
 
 \begin{figure}
@@ -170,7 +173,7 @@ The ROHF and CI calculations were done using the PySCF package \cite{PYSCF} and 
 \caption{Zero bias, finite variance extrapolation for $\partial E/\partial p$ using the regularized estimator. The blue points are evaluated using VMC, the orange curve is a fit to $a + b\epsilon^3$, and the red star denotes the extrapolated estimation. }
 \end{figure}
 
-We begin by verifying the core claim of the regularized integrand \eqref{eq:convergent_integral} being finite across the nodes of $\Psi$ for any $\epsilon > 0$.
+We begin by verifying the core claim of the regularized integrand \eqref{eq:convergent_integral} being finite across the nodes of $\Psi$ for any $\epsilon > 0$.\lucas{The integrand is not making a claim. Be more specific. Are we just verifying Eqn \ref{eq:convergent_integral}?}
 To do so, we evaluate the regularized integrand for various $\epsilon$ along a path which passes through a node $\vec{N}$, $\vec{R}(x) = \vec{N} + x \nabla \Psi(\vec{N})/|\nabla \Psi(\vec{N})|$ with $x \in [-0.1, 0.1]$ Bohr.
 The results are shown in the lower plot of Figure 1.
 For all values of $\epsilon$, the value of the integrand is pushed to zero at the node, removing the divergence in the integral.
@@ -188,20 +191,25 @@ First, a standard VMC calculation with 200,000 steps and 2,000 configurations pe
 Then, $\partial E/\partial p$ was estimated using \eqref{eq:regularized_estimator} for $\epsilon$ between $10^{-1}$ Bohr and $10^{-5}$ Bohr using the VMC configurations, shown in the blue data points.
 Since the same configurations were used for each evaluation, the estimates have a strong statistical correlation and the predicted $\epsilon^3$ bias is clearly present, shown by the orange fit curve.
 The intercept of the fit curve is shown by the red star and is the zero-bias estimate of $\partial E/\partial p$; the variance can be deduced by the error bar of the blue data points, in this case 0.025 mHa.
-As the bias is zero within statistical errors for small values of $\epsilon$, most practical calculations can be carried out for a fixed value of $\epsilon$ between $10^{-5}$ and $10^{-2}$ Bohr without extrapolation.
+Since the bias is zero within statistical errors for small values of $\epsilon$, most practical calculations can be carried out for a fixed value of $\epsilon$ between $10^{-5}$ and $10^{-2}$ Bohr without extrapolation.
+\lucas{Thus the regularized estimator is quite robust to $\epsilon$}
 
 \section{Conclusion}
-Integral to the reliability of variational Monte Carlo wave function optimization methods is the finite variance estimation of $\partial E/\partial p$.
+Efficient estimation of $\partial E/\partial p$ is integral to the reliability of variational Monte Carlo wave function optimization methods.
 Within these techniques, wave function parameters are updated iteratively, with the estimate of $\partial E/\partial p$ used in determining updates.
 If the estimation is inaccurate, having a large bias, the final converged wave function is not guaranteed to be the lowest energy wave function in the parameterization space.
+\lucas{it's not guaranteed anyway, unless you are doing global optimization. Need to define "parameterization space"}
 If the estimation is unstable, having a large variance, the updates will have large statistical fluctuations, decreasing efficiency.
+\lucas{don't use future tense here.}
 While the naive Monte Carlo estimator for $\partial E/\partial p$ is unbiased, it has an infinite variance, prompting a search for finite variance estimators for the quantity.
+\lucas{This paragraph is more of an introduction than a conclusion. Usually the conclusion/summary has conclusions and summaries in it.} 
 
-In this work, we derive and test a simple regularized estimator for $\partial E/\partial p$ which has finite variance and can be extrapolated to zero bias.
+In this work, we derived and tested a simple regularized estimator for $\partial E/\partial p$ which has finite variance and can be extrapolated to zero bias.
 The divergent variance present in the naive Monte Carlo estimator is suppressed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(\vec{p}, \vec{R})$. 
 We prove that the regularized estimator manages a finite variance by incurring a cubic bias which can be efficiently extrapolated to zero bias.
 The extrapolation is carried out, and a finite variance, zero-bias estimate of $\partial E/\partial p$ is evaluated for a determinantal coefficient in a trial wave function for the LiH molecule.
+\lucas{explain why this is advantageous and an improvement of the state of the art. }
 
-\bibliographystyle{unsrt}
+%\bibliographystyle{unsrt}
 \bibliography{pgradregr}
 \end{document}
