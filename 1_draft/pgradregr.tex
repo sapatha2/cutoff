@@ -190,7 +190,8 @@ The ROHF and CI calculations were done using the PySCF package \cite{PYSCF} and 
 \caption{Zero bias, finite variance extrapolation for $\partial E/\partial p$ using the regularized estimator. The blue points are evaluated using VMC, the orange curve is a fit to $a + b\epsilon^3$, and the red star denotes the extrapolated estimation. }
 \end{figure}
 
-We begin by verifying the core claim of the regularized integrand Eqn~\ref{eq:convergent_integral} being finite across the nodes of $\Psi$ for any $\epsilon > 0$.\lucas{The integrand is not making a claim. Be more specific. Are we just verifying Eqn \ref{eq:convergent_integral}?}
+We begin by verifying that the regularized integral in Eqn~\ref{eq:convergent_integral} has finite value for $\epsilon > 0$. \lucas{The integrand is not making a claim. Be more specific. Are we just verifying Eqn \ref{eq:convergent_integral}?}
+\shivesh{Updated to be more specific.}
 To do so, we evaluate the regularized integrand for various $\epsilon$ along a path which passes through a node $\vec{N}$, $\vec{R}(x) = \vec{N} + x \nabla \Psi(\vec{N})/|\nabla \Psi(\vec{N})|$ with $x \in [-0.1, 0.1]$ Bohr.
 The results are shown in the lower plot of Figure 1.
 For all values of $\epsilon$, the value of the integrand is pushed to zero at the node, removing the divergence in the integral.
@@ -209,7 +210,7 @@ Then, $\partial E/\partial p$ was estimated using Eqn~\ref{eq:regularized_estima
 Since the same configurations were used for each evaluation, the estimates have a strong statistical correlation and the predicted $\epsilon^3$ bias is clearly present, shown by the orange fit curve.
 The intercept of the fit curve is shown by the red star and is the zero-bias estimate of $\partial E/\partial p$; the variance can be deduced by the error bar of the blue data points, in this case 0.025 mHa.
 Since the bias is zero within statistical errors for small values of $\epsilon$, most practical calculations can be carried out for a fixed value of $\epsilon$ between $10^{-5}$ and $10^{-2}$ Bohr without extrapolation.
-\lucas{Thus the regularized estimator is quite robust to $\epsilon$}
+Thus the regularized estimator is quite robust to $\epsilon$.
 
 \section{Conclusion}
 Efficient estimation of $\partial E/\partial p$ is integral to the reliability of variational Monte Carlo wave function optimization methods.
