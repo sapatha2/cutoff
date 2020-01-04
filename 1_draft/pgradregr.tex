@@ -20,50 +20,58 @@
 \date{\today}
 \begin{abstract}
 The parameter derivative of the expectation value of the energy, $\partial E/\partial p$, is a key ingredient in variational quantum Monte Carlo (VMC) wave function optimization methods.
-A naive Monte Carlo estimate of this derivative suffers from an infinite variance which inhibits the efficiency of optimization methods that rely on a stable estimate of the derivative.
-In this work, we derive a simple regularization of the naive estimator which is trivial to implement in existing VMC codes, has finite variance, and a negligible bias which can be extrapolated to zero bias with no extra cost.
+A na\"ive Monte Carlo estimate of this derivative suffers from an infinite variance which inhibits the efficiency of optimization methods that rely on a stable estimate of the derivative.
+In this work, we derive a simple regularization of the na\"ive estimator which is trivial to implement in existing VMC codes, has finite variance, and a negligible bias which can be extrapolated to zero bias with no extra cost.
 We use this estimator to construct an unbiased, finite variance estimation of $\partial E/\partial p$ for a multi-Slater-Jastrow trial wave function on the LiH molecule.
 As such, this regularized estimator stands stands as a light weight option for stable estimation of $\partial E/\partial p$ in VMC optimization techniques.
 \end{abstract}
 \maketitle 
 
 \section{Introduction}
+Accurate and stable stochastic estimation of the parameter gradient of the energy expectation value \lucas{In general, I think you may need to build this up a little more and explain the problem.} \shivesh{tried to make it more detailed, but I think the last sentence is a bit shaky.} is an integral component of variational Monte Carlo (VMC) wave function energy optimization techniques \cite{PhysRevB.64.024512, doi:10.1063/1.1604379, Toulouse2007, Umrigar2005, Umrigar2007, Toulouse2008}.
+Within these techniques, the parameters $\vec{p}$ in a wavefunction $\Psi(\vec{R},\vec{p})$ are optimized to minimize the energy expectation value $E(\vec{p}) \equiv \langle \Psi(\vec{p})|\hat{H} |\Psi(\vec{p})\rangle$.
+This is accomplished through iterative approaches where a stochastic estimate of the gradient $\partial E(\vec{p})/\partial p$ is used in updating the parameter $p$ at each iteration. 
+If the estimate for $\partial E/\partial p$ is inaccurate, having a large bias, or unstable, having a large variance, the updates at each iteration will not be optimal, leading to inefficient wave function optimization.
 
-\lucas{Typically equations are referenced as Eqn~\ref{eq:convergent_integral}; you've done something else here. } 
-\shivesh{Done.}
-
-Accurate and stable stochastic estimation of the parameter gradient of the energy expectation value, $\partial E/\partial p$,\lucas{define $p$. In general, I think you may need to build this up a little more and explain the problem.} is an integral component of variational Monte Carlo (VMC) wave function energy optimization techniques \cite{PhysRevB.64.024512, doi:10.1063/1.1604379, Toulouse2007, Umrigar2005, Umrigar2007, Toulouse2008}.
-Within these techniques, wave function parameters are updated iteratively, with the estimate of $\partial E/\partial p$ used in determining updates.
-If the estimation is inaccurate, having a large bias, the final converged wave function is not guaranteed to be the lowest energy wave function in the parameterization space.
-If the estimation is unstable, having a large variance, the updates will have large statistical fluctuations, decreasing efficiency.
-An appropriate estimator for $\partial E/ \partial p$ should then have both low bias and variance.
-
-A useful starting point is the naive Monte Carlo estimator for $\partial E/\partial p$ evaluated on a wave function $\Psi(\vec{p}, \vec{R})$ 
-\begin{equation}
-\begin{split}
-\hat{\theta} \equiv \left\langle E_L(R) \frac{\partial_p \Psi(R)}{\Psi(R)} \right\rangle - \left\langle E_L(R) \right \rangle \left \langle \frac{\partial_p \Psi(R)}{\Psi(R)}\right\rangle 
-\end{split}
-\label{eq:naive_estimator}
-\end{equation}
+The simplest estimator for $\partial E/\partial p$ is the na\"ive Monte Carlo estimate which takes the form of a covariance shown in Eqn 6 of \cite{Umrigar2005}.
+This estimator is unbiased and has a zero-variance principle for any wave function parameter $p$ in the limit of $\Psi(\vec{R}, \vec{p})$ being an eigenstate of $\hat{H}$.
+However, the variance of this estimator diverges when $\Psi$ is not an exact eigenstate and $p$ is a parameter which affects the nodes of the wave function, as in the case of orbital or determinantal coefficients \cite{Avella, doi:10.1063/1.4933112}.
+This infinite variance problem leads to inefficient wave function optimization and has prompted a search for finite variance estimators of $\partial E/\partial p$.
 \lucas{My initial impression is that this feels heavy for the introduction. We should write a simpler thing, or just save the equations for later.}
-The brackets $\langle \ \rangle$ are Monte Carlo expectation values over $M$ configurations drawn from the distribution $|\Psi(\vec{p}, \vec{R})|^2$, and $E_L = (\hat{H}\Psi)/\Psi$ is the local energy with Hamiltonian operator $\hat{H}$.
-While unbiased, $\hat{\theta}$ has a divergent variance \cite{Avella, doi:10.1063/1.4933112} due to the behavior of the first term in Eqn~\ref{eq:naive_estimator} near the nodes of $\Psi$.
-This infinite variance leads to inefficient optimization and has prompted a search for zero bias, finite variance estimators of $\partial E/\partial p$.
+\shivesh{moved equations to later.}
 
-Current zero bias, finite variance estimation techniques were adapted from the low-variance estimation of forces in QMC \cite{doi:10.1063/1.462059, doi:10.1063/1.3516208, Phys2016} and involve guiding or auxiliary wave functions, such as a reweighting scheme \cite{Avella, Attaccalite2008, Zen2013} or improved estimators \cite{Assaraf1999, doi:10.1063/1.1286598, Assaraf2003}.
-While zero bias is achieved for arbitrary guiding wave functions $\Psi_G$, finite variance is only acquired with specially tuned guiding functions which cancel the divergences in Eqn~\ref{eq:naive_estimator} near the nodes of $\Psi$.
-A general form for $\Psi_G$ which yields a finite-variance estimate of $\partial E/\partial p$ is provided by Umrigar \cite{doi:10.1063/1.4933112} where $\Psi_G$ differs from $\Psi$ only near the nodes, the prior having a finite value.
-Still unresolved is a zero bias, finite variance estimator for Eqn~\ref{eq:naive_estimator} without the luggage of a guiding wave function. 
+%A useful starting point is the na\"ive Monte Carlo estimator for $\partial E/\partial p$ evaluated on a wave function $\Psi(\vec{p}, \vec{R})$ 
+
+%\lucas{My initial impression is that this feels heavy for the introduction. We should write a simpler thing, or just save the equations for later.}
+%.
+%While unbiased, $\hat{\theta}$ has a divergent variance \cite{Avella, doi:10.1063/1.4933112} due to the behavior of the first term in Eqn~\ref{eq:na\"ive_estimator} near the nodes of $\Psi$.
+%This infinite variance leads to inefficient optimization and has prompted a search for zero bias, finite variance estimators of $\partial E/\partial p$.
+
+Current finite variance estimation techniques were adapted from the low-variance estimation of forces in QMC \cite{doi:10.1063/1.462059, doi:10.1063/1.3516208, Phys2016} and involve guiding or auxiliary wave functions, such as a reweighting scheme \cite{Avella, Attaccalite2008, Zen2013} or improved estimators \cite{Assaraf1999, doi:10.1063/1.1286598, Assaraf2003}.
+Finite variance is achieved for special guiding wave functions $\Psi_G$ which cancel the divergences present in the na\"ive Monte Carlo estimator, as discussed in the appendix of \cite{doi:10.1063/1.4933112}.
+Unfortunately, using a guiding wave function within VMC will generally lead to a systematic bias in the estimate of $\partial E/\partial p$ for any finite Monte Carlo sample \cite{doi:10.1063/1.4933112, Toulouse2015}.
+This bias can be reduced, but at the significant cost of evaluating variances and covariances of the MC estimator \cite{Toulouse2015} or repeating VMC calculations while tuning $\Psi_G$.
+Still unresolved is an inexpensive, low-bias, low-variance estimation technique for $\partial E/\partial p$.
 \lucas{"without the luggage" is not too convincing. Isn't the point that the guiding wave function doesn't need to be tuned, and that the algorithm can be simpler?}
+\shivesh{language updated to be clearer about what I mean.}
 
-We derive and test a simple regularized estimator for $\partial E/\partial p$ which has finite variance, can be extrapolated to zero bias, and does not rely on guiding wave functions.
-Instead, the divergence in the first term of Eqn~\ref{eq:naive_estimator} is suppressed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(\vec{p}, \vec{R})$. 
+We derive and test a simple regularized estimator for $\partial E/\partial p$ which has finite variance and can be efficiently extrapolated to zero bias.
+Instead of relying on guiding wave functions, the divergent variance of the na\"ive Monte Carlo estimator is suppressed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(\vec{p}, \vec{R})$. 
 We present rigorous mathematical proofs for the scalings of the variance and bias of the regularized estimator with $\epsilon$, and provide an algorithm for the zero bias extrapolation of the estimate.
 The mathematical predictions and extrapolation procedure are then tested in evaluating $\partial E/\partial p$ for a multi-Slater-Jastrow (MSJ) trial wave function on the LiH molecule.
 
 \section{Regularized estimator}
-The naive estimator Eqn~\ref{eq:naive_estimator} suffers from an infinite variance. 
-\lucas{Should explain the na\"ive estimator here in a little more detail. } 
+The na\"ive Monte Carlo estimate for $\partial E/\partial p$ evaluated on a wave function $\Psi(\vec{R}, \vec{p})$ is 
+\begin{equation}
+\begin{split}
+\hat{\theta} \equiv \left\langle E_L(\vec{R}) \frac{\partial_p \Psi(\vec{R}, \vec{p})}{\Psi(\vec{R}, \vec{p})} \right\rangle - \left\langle E_L(\vec{R}) \right \rangle \left \langle \frac{\partial_p \Psi(\vec{R},\vec{p})}{\Psi(\vec{R},\vec{p})}\right\rangle 
+\end{split}
+\label{eq:naive_estimator}
+\end{equation} 
+where the brackets $\langle \ \rangle$ are Monte Carlo expectation values over $M$ configurations drawn from the distribution $|\Psi(\vec{p}, \vec{R})|^2$, and $E_L = (\hat{H}\Psi)/\Psi$ is the local energy with Hamiltonian operator $\hat{H}$.
+This estimator has zero bias for any wave function $\Psi$ and parameter $p$, but can acquire a divergent variance.
+\lucas{Should explain the na\"ive estimator here in a little more detail.}
+\shivesh{Moved it.}
 The divergent contribution to the variance arises from the evaluation of the integral
 \begin{equation}
 \int \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 |\Psi|^2 dR.
@@ -73,7 +81,7 @@ when $\Psi$ is not an eigenstate of $\hat{H}$ and the parameter $p$ affects the 
 In this case, to lowest order in distance $|\vec{R}-\vec{N}|$ from a nodal point $\vec{N}$ of $\Psi$, $\hat{H}\Psi$ and $\partial_p \Psi \sim const$ and $\Psi \sim \nabla \Psi(\vec{N}) \cdot (\vec{R} - \vec{N})$, leading to the integrand in Eqn~\ref{eq:divergent_integral} behaving as $1/|\vec{R}-\vec{N}|^2$ near the node.
 Since the integration domain includes the nodal surface of $\Psi$, the $1/|\vec{R}-\vec{N}|^2$ behavior of the integrand as $|\vec{R}-\vec{N}|\rightarrow 0$ leads to a divergent integral.
 
-We obtain a finite variance estimator for $\partial E/\partial p$ by multiplying the first term in the naive estimator Eqn~\ref{eq:naive_estimator} by a function $f_\epsilon$:
+We obtain a finite variance estimator for $\partial E/\partial p$ by multiplying the first term in the na\"ive estimator Eqn~\ref{eq:naive_estimator} by a function $f_\epsilon$:
 \begin{equation}
 \begin{split}
 &\hat{\theta_\epsilon} \equiv \\ 
@@ -219,11 +227,11 @@ If the estimation is inaccurate, having a large bias, the final converged wave f
 \lucas{it's not guaranteed anyway, unless you are doing global optimization. Need to define "parameterization space"}
 If the estimation is unstable, having a large variance, the updates will have large statistical fluctuations, decreasing efficiency.
 \lucas{don't use future tense here.}
-While the naive Monte Carlo estimator for $\partial E/\partial p$ is unbiased, it has an infinite variance, prompting a search for finite variance estimators for the quantity.
+While the na\"ive Monte Carlo estimator for $\partial E/\partial p$ is unbiased, it has an infinite variance, prompting a search for finite variance estimators for the quantity.
 \lucas{This paragraph is more of an introduction than a conclusion. Usually the conclusion/summary has conclusions and summaries in it.} 
 
 In this work, we derived and tested a simple regularized estimator for $\partial E/\partial p$ which has finite variance and can be extrapolated to zero bias.
-The divergent variance present in the naive Monte Carlo estimator is suppressed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(\vec{p}, \vec{R})$. 
+The divergent variance present in the na\"ive Monte Carlo estimator is suppressed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(\vec{p}, \vec{R})$. 
 We prove that the regularized estimator manages a finite variance by incurring a cubic bias which can be efficiently extrapolated to zero bias.
 The extrapolation is carried out, and a finite variance, zero-bias estimate of $\partial E/\partial p$ is evaluated for a determinantal coefficient in a trial wave function for the LiH molecule.
 \lucas{explain why this is advantageous and an improvement of the state of the art. }
