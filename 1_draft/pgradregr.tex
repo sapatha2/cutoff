@@ -74,7 +74,7 @@ when $\Psi$ is not an eigenstate of $\hat{H}$ and the parameter $p$ affects the 
 In this case, to lowest order in distance $|\vec{R}-\vec{N}|$ from a nodal point $\vec{N}$ of $\Psi$, $\hat{H}\Psi$ and $\partial_p \Psi \sim const$ and $\Psi \sim \nabla \Psi(\vec{N}) \cdot (\vec{R} - \vec{N})$, leading to the integrand in Eqn~\ref{eq:divergent_integral} behaving as $1/|\vec{R}-\vec{N}|^2$ near the node.
 Since the integration domain includes the nodal surface of $\Psi$, the $1/|\vec{R}-\vec{N}|^2$ behavior of the integrand as $|\vec{R}-\vec{N}|\rightarrow 0$ leads to a divergent integral.
 
-We obtain a finite variance estimator for $\partial E/\partial p$ by multiplying the first term in the na\"ive estimator Eqn~\ref{eq:naive_estimator} by a function $f_\epsilon$:
+We obtain a finite variance estimator for $\partial E/\partial p$ by multiplying both terms in the na\"ive estimator of Eqn~\ref{eq:naive_estimator} by a function $f_\epsilon$:
 \begin{equation}
 \begin{split}
 &\hat{\theta_\epsilon} \equiv \\ 
@@ -86,80 +86,61 @@ We obtain a finite variance estimator for $\partial E/\partial p$ by multiplying
 \shivesh{Updated the summations. The second term does need to be regularized, added that in}.
 where 
 \begin{equation}
-f_\epsilon(\vec{R}) = \begin{cases} 
-      \sum_{n=1}^{\infty} a_n |\frac{\vec{x}}{\epsilon}|^n & |\frac{\vec{x}}{\epsilon}| < 1 \\
+\begin{split}
+&f_\epsilon(\vec{R}) = \begin{cases} 
+     7(\frac{\vec{x}}{\epsilon})^6 - 15(\frac{\vec{x}}{\epsilon})^4 + 9(\frac{\vec{x}}{\epsilon})^2 & |\frac{\vec{x}}{\epsilon}| < 1 \\
       1 & |\frac{\vec{x}}{\epsilon}| \ge 1 \\
-   \end{cases},\ \vec{x} \equiv \frac{\nabla \Psi(\vec{R}) \Psi(\vec{R})}{|\nabla \Psi(\vec{R})|^2},
+   \end{cases}\\ 
+ &\vec{x} \equiv \frac{\nabla \Psi(\vec{R}) \Psi(\vec{R})}{|\nabla \Psi(\vec{R})|^2}.
+\end{split}
 \label{eq:regularizing_function}
 \end{equation} 
-where the constants $a_n$ can take any real value.
 \lucas{What does the O notation mean here? This is not explained? If it's meant to be big-O notation, that uses $\mathcal{O}$, and it shouldn't be used here. Just say that it's proportional to.} 
 \shivesh{Updated to remove any O and just explicitly write down the general form of $f_\epsilon$.}
-The previously divergent contribution to the estimator variance Eqn~\ref{eq:divergent_integral} is replaced by a finite integral, verified by piecewise integration
+Details on the construction of $f_\epsilon$ can be found in the Appendix.
+
+The regularized estimator in Eqn~\ref{eq:regularized_estimator} achieves a finite variance by replacing the previously divergent integral Eqn~\ref{eq:divergent_integral} with a finite one
 \begin{equation}
 \begin{split}
-\int \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 f_\epsilon^2 |\Psi|^2 dR = \int_{|x/\epsilon|\geq 1} \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 |\Psi|^2 dR +\\ \int_{|x/\epsilon|< 1} \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 f_\epsilon^2 |\Psi|^2 dR,
+\int \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 f_\epsilon^2 |\Psi|^2 dR = \int_{|x/\epsilon|\geq 1} \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 |\Psi|^2 dR +\\ \int_{|x/\epsilon|< 1} \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 f_\epsilon^2 |\Psi|^2 dR.
 \end{split}
 \label{eq:convergent_integral}
 \end{equation}
+This is readily verified by breaking up the integral into two domains as shown above.
 Since $\Psi = 0$ only occurs when $\vec{x} = 0$, the integral for $|\vec{x}/\epsilon|\geq 1$ completely excludes the nodal surface of $\Psi$, and is finite. 
-Further, since $|\vec{x}/\epsilon| \sim |\nabla\Psi(\vec{N}) \cdot (\vec{R}-\vec{N})|/\epsilon|\nabla  \Psi(\vec{N})|$ as $|\vec{R} - \vec{N}| \rightarrow 0$, the integrand arbitrarily close to the nodal surface is a constant, meaning the second integral for $|\vec{x}/\epsilon| < 1$ is also finite.
+Further, since $|\vec{x}/\epsilon| \sim |\nabla\Psi(\vec{N}) \cdot (\vec{R}-\vec{N})|/\epsilon|\nabla  \Psi(\vec{N})|$ as $|\vec{R} - \vec{N}| \rightarrow 0$, the integrand arbitrarily close to the nodal surface is $\propto |\vec{R} - \vec{N}|^2$, meaning the second integral for $|\vec{x}/\epsilon| < 1$ is also finite.
 
 \lucas{It looks like the following attempts to show how one figures out the correct form form $f_\epsilon$. This is good for a talk (or an appendix!), but bad for a paper. You're trying to establish that a given estimator has low bias and variance, not show how to construct it. }
-The variance of Eqn~\ref{eq:regularized_estimator} decreases exponentially as $1/\epsilon$ to lowest order in $\epsilon$ for any choice of $f_\epsilon$ satisfying the conditions in Eqn~\ref{eq:regularizing_function}.
+\shivesh{Moved construction to appendix.}
+Not only is the variance finite, but the variance of Eqn~\ref{eq:regularized_estimator} decreases exponentially as $1/\epsilon$ to lowest order in $\epsilon$.
 This is a consequence of $f_\epsilon$ being dimensionless, \lucas{What does non-dimensionality mean?} \shivesh{Meant to say dimensionless.} which ensures that all contributions to the $|\vec{x}/\epsilon|< 1$ integral in Eqn~\ref{eq:convergent_integral} take the form:
 \begin{equation}
-\int_{|\vec{x}/\epsilon|< 1} \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 |\frac{\vec{x}}{\epsilon}|^n |\Psi|^2 dR, n\geq 2
-\end{equation}
+\int_{|\vec{x}/\epsilon|< 1} \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 |\frac{\vec{x}}{\epsilon}|^{2n} |\Psi|^2 dR
+\end{equation} 
+where $n$ is an integer.
 As $\epsilon \rightarrow 0$, the integration domain is very near the nodal surface and the integrand can be Taylor expanded to lowest order in $|\vec{R}-\vec{N}|$. 
 The Taylor expansion yields an integrand $|\vec{x}/\epsilon|^{n-2}/\epsilon^2$ and results in an integral which scales as $O(1/\epsilon)$ to lowest order in $\epsilon$.
 As the integrand is even, all other contributions to the variance scale as $O(\epsilon)$, meaning the leading order changes in the variance come directly from Eqn~\ref{eq:convergent_integral}.
 
-Unfortunately, the regularized estimator results in a linear-order biased estimation of $\partial E/\partial p$ for a general function $f_\epsilon$ satisfying Eqn~\ref{eq:regularizing_function}.
-The bias in Eqn~\ref{eq:regularized_estimator} results only from the first term and is written as 
+The exponentially suppressed variance of the estimate comes at a cost, in the form of cubic bias $O(\epsilon^3)$ to lowest order in $\epsilon$.
+The bias in Eqn~\ref{eq:regularized_estimator} results only from the first term in the expression and is written as
 \begin{equation}
-\text{Bias: } \int_{|\vec{x}/\epsilon|< 1} \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big) (f_\epsilon - 1)|\Psi|^2 dR.
+\text{Bias: } \int_{|\vec{x}/\epsilon|< 1} H\Psi \partial_p \Psi (f_\epsilon - 1) dR.
 \label{eq:estimator_bias}
 \end{equation}
-As before, we take $\epsilon \rightarrow 0$ and Taylor expand the integrand to lowest order in $|\vec{R}-\vec{N}|$.
-This yields an integrand, to lowest order in $\epsilon$, $a_1|\vec{x}/\epsilon| - 1$.
-Carrying out the integration yields a bias that scales as $O(\epsilon)$ to lowest order in $\epsilon$.
-The linear bias is inhibitive to zero bias extrapolation as the estimation bias is present for any value of $\epsilon$ while the variance increases exponentially with $\epsilon \rightarrow 0$.
+Following the analysis of the previous paragraph, we evaluate the bias to lowest non-vanishing order in $\epsilon$ by Taylor expanding $H\Psi \partial_p\Psi$ in powers of $|\vec{R} - \vec{N}|$ and calculating the bias at each order in the expansion.
+The constant and linear order terms in the Taylor expansion do not contribute to the bias, the latter by parity of the integrand, the prior by explicit integration of $f_\epsilon$ in Eqn~\ref{eq:regularizing_function}.
+The lowest non-vanishing contribution to the bias is due to term in the Taylor expansion $\propto |\vec{R} - \vec{N}|^2$, yielding an integral which scales as $\epsilon^3$.
 
-A simple normalization condition on $f_\epsilon$ ensures a bias of $O(\epsilon^3)$, allowing for efficient extrapolation to zero bias.
-The expression for the bias Eqn~\ref{eq:estimator_bias} as $\epsilon \rightarrow 0$ after carrying out the necessary Taylor expansions is
-$$
-\lim_{\epsilon\rightarrow 0}\text{Bias} =  A \int_{|\vec{x}/\epsilon|< 1} (f_\epsilon - 1) dR.
-$$
-where $A$ is a constant resulting from $\hat{H}\Psi$ and $\partial_p \Psi \sim const$ as $|\vec{R}-\vec{N}|\rightarrow 0$.
-As such, the linear order bias can be removed by enforcing a normalization condition on $f_\epsilon$ on the domain of integration, 
-\begin{equation}
-\int_{|\vec{x}/\epsilon|< 1} (f_\epsilon - 1) dR = 0.
-\label{eq:normalization_condition}
-\end{equation}
-The leading order contribution to the bias arises from the breakdown of the Taylor approximation $\hat{H}\Psi$ and $\partial_p \Psi \sim const$, and results in a bias $O(\epsilon^3)$.
-The quadratic contribution to the bias is zero as $f_\epsilon$ is even in $|\vec{R}-\vec{N}|$.
-
-A final set of continuity and smoothness conditions on $f_\epsilon$ at $|\vec{x}/\epsilon| = 1$ reduce the magnitude of the cubic bias.
-These two conditions can be written as 
-\begin{equation}
-f(1) = 1, \nabla f(1) = 0.
-\label{eq:smoothness_condition}
-\end{equation}
-The three conditions, smoothness, continuity and normalization, can all be satisfied with a polynomial formula for $f$
-\begin{equation}
-f_\epsilon(|\frac{\vec{x}}{\epsilon}|) = 7(\frac{\vec{x}}{\epsilon})^6 - 15(\frac{\vec{x}}{\epsilon})^4 + 9(\frac{\vec{x}}{\epsilon})^2.
-\label{eq:final_regularization}
-\end{equation}
-Therefore, the regularized estimator Eqn~\ref{eq:regularized_estimator} with $f_\epsilon$ defined as Eqn~\ref{eq:final_regularization} serves as a finite variance estimator for $\partial E/\partial p$ which has a leading order cubic bias in $\epsilon$.
-
-With the regularized estimator in hand, the finite variance, zero bias, extrapolated estimation for $\partial E/\partial p$ using can be carried out in four steps:
+This cubic bias can be removed, however, by a zero-bias extrapolation carried out in four steps.
 \begin{enumerate}
 \item Conduct a standard VMC calculation to collect $M$ configurations from $|\Psi|^2$.
 \item Evaluate $|\vec{x}_i|$ from Eqn~\ref{eq:regularizing_function} for each configuration.
-\item Calculate the regularized estimate Eqn~\ref{eq:regularized_estimator} for a sequence of $\epsilon > 0$.
+\item Calculate the regularized estimate Eqn~\ref{eq:regularized_estimator} for a sequence of $\epsilon \rightarrow 0$ on the collected configurations.
 \item Fit a function $a\epsilon^3 + b$ to the estimates; the intercept $b$ is the zero bias, finite variance estimate for $\partial E/\partial p$.
 \end{enumerate}
+This procedure can be carried out very efficiently as only a single set of VMC configurations must be drawn for the entire extrapolation, resulting in an inexpensive, finite-variance, zero bias estimate of $\partial E/\partial p$.
+
 \lucas{If it's an enumerated list, just make it one; it's easier to read than text. This phrasing is a little weird because it makes it sound more complicated. Aren't you just taking the expectation value as a function of $\epsilon$ and extrapolating to zero?} 
 \shivesh{Updated to an enumerated list.}
 
@@ -230,4 +211,72 @@ As such, the regularized estimator is an efficient option for the accurate and s
 
 %\bibliographystyle{unsrt}
 \bibliography{pgradregr}
+
+\section{Appendix}
+The following are details on the construction of $f_\epsilon$ seen in Eqn~\ref{eq:regularizing_function}. 
+We begin with the general form of a regularized estimator
+\begin{equation}
+\begin{split}
+&\hat{\theta_\epsilon} \equiv \\ 
+&\left\langle E_L(R) \frac{\partial_p \Psi(R)}{\Psi(R)} f_\epsilon(R) \right\rangle - \left\langle E_L(R) \right \rangle \left \langle \frac{\partial_p \Psi(R)}{\Psi(R)} f_\epsilon(R) \right\rangle
+\label{eq:regularized_estimator}
+\end{split}
+\end{equation}
+where 
+\begin{equation}
+f_\epsilon(\vec{R}) = \begin{cases} 
+      \sum_{n=1}^{\infty} a_n |\frac{\vec{x}}{\epsilon}|^n & |\frac{\vec{x}}{\epsilon}| < 1 \\
+      1 & |\frac{\vec{x}}{\epsilon}| \ge 1 \\
+   \end{cases},\ \vec{x} \equiv \frac{\nabla \Psi(\vec{R}) \Psi(\vec{R})}{|\nabla \Psi(\vec{R})|^2},
+\label{eq:regularizing_function}
+\end{equation} 
+
+The previously divergent contribution to the estimator variance Eqn~\ref{eq:divergent_integral} is replaced by a finite integral, verified by piecewise integration
+\begin{equation}
+\begin{split}
+\int \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 f_\epsilon^2 |\Psi|^2 dR = \int_{|x/\epsilon|\geq 1} \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 |\Psi|^2 dR +\\ \int_{|x/\epsilon|< 1} \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 f_\epsilon^2 |\Psi|^2 dR,
+\end{split}
+\label{eq:convergent_integral}
+\end{equation}
+Since $\Psi = 0$ only occurs when $\vec{x} = 0$, the integral for $|\vec{x}/\epsilon|\geq 1$ completely excludes the nodal surface of $\Psi$, and is finite. 
+Further, since $|\vec{x}/\epsilon| \sim |\nabla\Psi(\vec{N}) \cdot (\vec{R}-\vec{N})|/\epsilon|\nabla  \Psi(\vec{N})|$ as $|\vec{R} - \vec{N}| \rightarrow 0$, the integrand arbitrarily close to the nodal surface is a constant, meaning the second integral for $|\vec{x}/\epsilon| < 1$ is also finite.
+
+Unfortunately, the regularized estimator results in a linear-order biased estimation of $\partial E/\partial p$ for a general function $f_\epsilon$ satisfying Eqn~\ref{eq:regularizing_function}.
+The bias in Eqn~\ref{eq:regularized_estimator} results only from the first term and is written as 
+\begin{equation}
+\text{Bias: } \int_{|\vec{x}/\epsilon|< 1} \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big) (f_\epsilon - 1)|\Psi|^2 dR.
+\label{eq:estimator_bias}
+\end{equation}
+As before, we take $\epsilon \rightarrow 0$ and Taylor expand the integrand to lowest order in $|\vec{R}-\vec{N}|$.
+This yields an integrand, to lowest order in $\epsilon$, $a_1|\vec{x}/\epsilon| - 1$.
+Carrying out the integration yields a bias that scales as $O(\epsilon)$ to lowest order in $\epsilon$.
+The linear bias is inhibitive to zero bias extrapolation as the estimation bias is present for any value of $\epsilon$ while the variance increases exponentially with $\epsilon \rightarrow 0$.
+
+A simple normalization condition on $f_\epsilon$ ensures a bias of $O(\epsilon^3)$, allowing for efficient extrapolation to zero bias.
+The expression for the bias Eqn~\ref{eq:estimator_bias} as $\epsilon \rightarrow 0$ after carrying out the necessary Taylor expansions is
+$$
+\lim_{\epsilon\rightarrow 0}\text{Bias} =  A \int_{|\vec{x}/\epsilon|< 1} (f_\epsilon - 1) dR.
+$$
+where $A$ is a constant resulting from $\hat{H}\Psi$ and $\partial_p \Psi \sim const$ as $|\vec{R}-\vec{N}|\rightarrow 0$.
+As such, the linear order bias can be removed by enforcing a normalization condition on $f_\epsilon$ on the domain of integration, 
+\begin{equation}
+\int_{|\vec{x}/\epsilon|< 1} (f_\epsilon - 1) dR = 0.
+\label{eq:normalization_condition}
+\end{equation}
+The leading order contribution to the bias arises from the breakdown of the Taylor approximation $\hat{H}\Psi$ and $\partial_p \Psi \sim const$, and results in a bias $O(\epsilon^3)$.
+The quadratic contribution to the bias is zero as $f_\epsilon$ is even in $|\vec{R}-\vec{N}|$.
+
+A final set of continuity and smoothness conditions on $f_\epsilon$ at $|\vec{x}/\epsilon| = 1$ reduce the magnitude of the cubic bias.
+These two conditions can be written as 
+\begin{equation}
+f(1) = 1, \nabla f(1) = 0.
+\label{eq:smoothness_condition}
+\end{equation}
+The three conditions, smoothness, continuity and normalization, can all be satisfied with a polynomial formula for $f$
+\begin{equation}
+f_\epsilon(|\frac{\vec{x}}{\epsilon}|) = 7(\frac{\vec{x}}{\epsilon})^6 - 15(\frac{\vec{x}}{\epsilon})^4 + 9(\frac{\vec{x}}{\epsilon})^2.
+\label{eq:final_regularization}
+\end{equation}
+Therefore, the regularized estimator Eqn~\ref{eq:regularized_estimator} with $f_\epsilon$ defined as Eqn~\ref{eq:final_regularization} serves as a finite variance estimator for $\partial E/\partial p$ which has a leading order cubic bias in $\epsilon$.
+
 \end{document}
