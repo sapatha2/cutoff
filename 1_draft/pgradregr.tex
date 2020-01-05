@@ -249,7 +249,7 @@ $$
 where $A$ is a constant resulting from $\hat{H}\Psi$ and $\partial_p \Psi \sim const$ as $|\vec{R}-\vec{N}|\rightarrow 0$.
 As such, the linear order bias can be removed by enforcing a normalization condition on $f_\epsilon$ on the domain of integration, 
 $$
-\int_{|\vec{x}/\epsilon|< 1} (f_\epsilon - 1) dR = 0.
+\lim_{\epsilon\rightarrow 0} \int_{|\vec{x}/\epsilon|< 1} (f_\epsilon - 1) dR = 0.
 $$
 The leading order contribution to the bias arises from the breakdown of the Taylor approximation $\hat{H}\Psi$ and $\partial_p \Psi \sim const$, and results in a bias $O(\epsilon^3)$.
 The quadratic contribution to the bias is zero as $f_\epsilon$ is even in $|\vec{R}-\vec{N}|$.
@@ -263,5 +263,10 @@ The three conditions, smoothness, continuity and normalization, can all be satis
 $$
 f_\epsilon(|\frac{\vec{x}}{\epsilon}|) = 7(\frac{\vec{x}}{\epsilon})^6 - 15(\frac{\vec{x}}{\epsilon})^4 + 9(\frac{\vec{x}}{\epsilon})^2.
 $$
+The normalization condition can be verified by noting the integration domain can be broken up as $\epsilon \rightarrow 0$
+$$
+\lim_{\epsilon\rightarrow 0} \int_{|\vec{x}/\epsilon|< 1}  dR  \rightarrow \int dN \int_{-\epsilon}^{\epsilon} dx(\vec{N})
+$$
+where the coordinate $\vec{N}$ is over the N-1 dimensional nodal surface, and the coordinate $x(\vec{N})$ is normal to that surface at $\vec{N}$.
 
 \end{document}
