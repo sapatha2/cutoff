@@ -40,13 +40,6 @@ This infinite variance problem leads to inefficient wave function optimization a
 \lucas{My initial impression is that this feels heavy for the introduction. We should write a simpler thing, or just save the equations for later.}
 \shivesh{moved equations to later.}
 
-%A useful starting point is the na\"ive Monte Carlo estimator for $\partial E/\partial p$ evaluated on a wave function $\Psi(\vec{p}, \vec{R})$ 
-
-%\lucas{My initial impression is that this feels heavy for the introduction. We should write a simpler thing, or just save the equations for later.}
-%.
-%While unbiased, $\hat{\theta}$ has a divergent variance \cite{Avella, doi:10.1063/1.4933112} due to the behavior of the first term in Eqn~\ref{eq:na\"ive_estimator} near the nodes of $\Psi$.
-%This infinite variance leads to inefficient optimization and has prompted a search for zero bias, finite variance estimators of $\partial E/\partial p$.
-
 Current finite variance estimation techniques were adapted from the low-variance estimation of forces in QMC \cite{doi:10.1063/1.462059, doi:10.1063/1.3516208, Phys2016} and involve guiding or auxiliary wave functions, such as a reweighting scheme \cite{Avella, Attaccalite2008, Zen2013} or improved estimators \cite{Assaraf1999, doi:10.1063/1.1286598, Assaraf2003}.
 Finite variance is achieved for special guiding wave functions $\Psi_G$ which cancel the divergences present in the na\"ive Monte Carlo estimator, as discussed in the appendix of \cite{doi:10.1063/1.4933112}.
 Unfortunately, using a guiding wave function within VMC will generally lead to a systematic bias in the estimate of $\partial E/\partial p$ for any finite Monte Carlo sample \cite{doi:10.1063/1.4933112, Toulouse2015}.
@@ -221,20 +214,19 @@ Since the bias is zero within statistical errors for small values of $\epsilon$,
 Thus the regularized estimator is quite robust to $\epsilon$.
 
 \section{Conclusion}
-Efficient estimation of $\partial E/\partial p$ is integral to the reliability of variational Monte Carlo wave function optimization methods.
-Within these techniques, wave function parameters are updated iteratively, with the estimate of $\partial E/\partial p$ used in determining updates.
-If the estimation is inaccurate, having a large bias, the final converged wave function is not guaranteed to be the lowest energy wave function in the parameterization space.
-\lucas{it's not guaranteed anyway, unless you are doing global optimization. Need to define "parameterization space"}
-If the estimation is unstable, having a large variance, the updates will have large statistical fluctuations, decreasing efficiency.
-\lucas{don't use future tense here.}
-While the na\"ive Monte Carlo estimator for $\partial E/\partial p$ is unbiased, it has an infinite variance, prompting a search for finite variance estimators for the quantity.
-\lucas{This paragraph is more of an introduction than a conclusion. Usually the conclusion/summary has conclusions and summaries in it.} 
-
 In this work, we derived and tested a simple regularized estimator for $\partial E/\partial p$ which has finite variance and can be extrapolated to zero bias.
 The divergent variance present in the na\"ive Monte Carlo estimator is suppressed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(\vec{p}, \vec{R})$. 
 We prove that the regularized estimator manages a finite variance by incurring a cubic bias which can be efficiently extrapolated to zero bias.
 The extrapolation is carried out, and a finite variance, zero-bias estimate of $\partial E/\partial p$ is evaluated for a determinantal coefficient in a trial wave function for the LiH molecule.
+
+The regularized estimator stands as an improvement to popular guiding wave function techniques \cite{Avella, Attaccalite2008, Zen2013, Assaraf1999, doi:10.1063/1.1286598, Assaraf2003} for the low-bias, low-variance estimation of $\partial E/\partial p$.
+In the latter, finite variance is achieved by using a guiding wave function to sample Monte Carlo configurations.
+The finite variance comes at the cost of a systematic bias which must be corrected with significant computational expense either by tuning the guiding wave function or evaluating covariances of the estimator \cite{ Toulouse2015}.
+The regularized estimator also has finite variance and non-zero bias for any $\epsilon > 0$, but carries no additional cost in extrapolating the estimate to zero bias.
+As such, the regularized estimator is an efficient option for the accurate and stable estimation of $\partial E/\partial p$ in VMC optimization techniques.
+
 \lucas{explain why this is advantageous and an improvement of the state of the art. }
+\shivesh{removed "intro"-ish paragraph, added a second one talking about advantages.}
 
 %\bibliographystyle{unsrt}
 \bibliography{pgradregr}
