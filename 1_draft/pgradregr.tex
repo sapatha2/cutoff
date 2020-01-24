@@ -28,8 +28,8 @@ This regularized estimator stands as a light weight option for stable estimation
 
 \section{Introduction}
 
-\lucas{Need a sentence on why we want to use VMC to evaluate these things.}
-Accurate and stable stochastic estimation of the parameter gradient of the energy expectation value is an integral component of variational Monte Carlo (VMC) wave function energy optimization techniques \cite{PhysRevB.64.024512, doi:10.1063/1.1604379, Toulouse2007, Umrigar2005, Umrigar2007, Toulouse2008}.
+Variational Monte Carlo (VMC) is a powerful technique to study correlated many-electron wave functions in materials.
+Accurate and stable stochastic estimation of the parameter gradient of the energy expectation value is an integral component of VMC wave function energy optimization techniques \cite{PhysRevB.64.024512, doi:10.1063/1.1604379, Toulouse2007, Umrigar2005, Umrigar2007, Toulouse2008}.
 Within these techniques, the parameters $\vec{p}$ in a wavefunction $\Psi(\vec{R},\vec{p})$ are optimized to minimize the energy expectation value $E(\vec{p}) \equiv \langle \Psi(\vec{p})|\hat{H} |\Psi(\vec{p})\rangle$.
 This is accomplished through iterative approaches where a stochastic estimate of the gradient $\partial E(\vec{p})/\partial p$ is used in updating the parameter $p$ at each iteration. 
 Low bias and low variance evaluations of the derivative directly improve the efficiency of stochastic wave function optimization techniques. 
@@ -37,16 +37,12 @@ Low bias and low variance evaluations of the derivative directly improve the eff
 The simplest estimator for $\partial E/\partial p$ is the derivative of the energy expectation value (Eqn~\ref{eq:naive_estimator}).
 This estimator is unbiased and has a zero-variance principle for any wave function parameter $p$ in the limit of $\Psi(\vec{R}, \vec{p})$ being an eigenstate of $\hat{H}$.
 However, the variance of this estimator diverges when $\Psi$ is not an exact eigenstate and $p$ is a parameter which affects the nodes of the wave function, as in the case of orbital or determinantal coefficients \cite{Avella, doi:10.1063/1.4933112}.
-%This infinite variance problem leads to inefficient wave function optimization and has prompted a search for finite variance estimators of $\partial E/\partial p$.
 
-Current finite variance estimation techniques were adapted from the low-variance estimation of forces in QMC \cite{doi:10.1063/1.462059, doi:10.1063/1.3516208, Phys2016} and involve guiding or auxiliary wave functions, such as a reweighting scheme \cite{Avella, Attaccalite2008, Zen2013} or improved estimators \cite{Assaraf1999, doi:10.1063/1.1286598, Assaraf2003}.
-Finite variance is achieved for special guiding wave functions $\Psi_G$ which cancel the divergences present in the na\"ive Monte Carlo estimator, as discussed  by Umrigar \cite{doi:10.1063/1.4933112}.
-Unfortunately, using a guiding wave function within VMC will generally lead to a systematic bias in the estimate of $\partial E/\partial p$ for any finite Monte Carlo sample \cite{doi:10.1063/1.4933112, Toulouse2015}.
-\lucas{How is this true? Are you sure?}
-This bias can be reduced, but at the significant cost of evaluating variances and covariances of the MC estimator \cite{Toulouse2015} or repeating VMC calculations while tuning $\Psi_G$.
-\lucas{Are you talking about bias due to nonlinear functions? This is not clear at all, and do we resolve this problem?}
-Still unresolved is an inexpensive, low-bias, low-variance estimation technique for $\partial E/\partial p$.
-\lucas{I don't think this is accurate. You can certainly choose $\Psi_G$ such that the estimation has finite variance and no bias. We can discuss this.}
+The infinite variance has been removed in several ways. 
+One method is to sample from distributions other than the trial wave function squared.\cite{Avella, Attaccalite2008, Zen2013} 
+This method has a small bias\cite{doi:10.1063/1.4933112} due to nonlinearity in the estimator, which is removed as the sample size increases.
+Alternatively, one can modify the estimator using an auxillary wave function.\cite{Assaraf1999, doi:10.1063/1.1286598, Assaraf2003}
+However, both of these approaches require the use of complex guiding or auxillary functions to implement the algorithm.
 
 We derive and test a simple regularized estimator for $\partial E/\partial p$ which has finite variance and can be efficiently extrapolated to zero bias.
 Instead of relying on guiding wave functions, the divergent variance of the na\"ive Monte Carlo estimator is suppressed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(\vec{p}, \vec{R})$. 
@@ -134,15 +130,13 @@ This cubic bias can be removed by a zero-bias extrapolation carried out in four 
 This procedure can be carried out very efficiently as only a single set of VMC configurations must be drawn for the entire extrapolation, resulting in an inexpensive, finite-variance, zero bias estimate of $\partial E/\partial p$.
 
 \section{Application to LiH molecule}
-We verify the predicted mathematical behavior of $\hat{\theta}_\epsilon$ by using it to estimate $\partial E/\partial p$ for a determinantal coefficient of a MSJ wave function for the LiH molecule
+We verify the predicted mathematical behavior of $\hat{\theta}_\epsilon$ by computing $\partial E/\partial p$ for a determinantal coefficient of an unoptimized multi-Slater Jastrow (MSJ) wave function for the LiH molecule:
 \begin{equation}
 \Psi(\vec{c}, \vec{\alpha}) = e^{J(\vec{\alpha})} \sum_{i} c_i  |D_i \rangle.
 \end{equation}
 The determinants $|D_i \rangle$ and coefficients $c_i$ were taken from a full configuration interaction (CI) expansion over the Li 1s, 2s, 2p and H 1s orbitals.
 The orbitals were constructed from a restricted open-shell Hartree Fock (ROHF) calculation using a correlation consistent quadruple-zeta valence basis set \cite{doi:10.1063/1.456153}.
-A 2-body Jastrow factor $J(\vec{\alpha})$ of the form in \cite{Wagner2009} was used with $\vec{\alpha} = 0$ except for appropriate electron-electron cusp conditions.
-The parameters $\vec{\alpha}, \vec{c}$ were not optimized further in order to emulate a trial function to be used in a standard VMC energy optimization calculation.
-\lucas{I don't see how this emulates a standard optimization. Usually we optimize the Jastrow. } 
+A 2-body Jastrow factor $J(\vec{\alpha})$ of the form in \cite{Wagner2009} was used with $\vec{\alpha} = 0$ except for electron-electron cusp conditions.
 The ROHF and CI calculations were done using the PySCF package \cite{PYSCF} and all QMC calculations were carried out using PyQMC \cite{pyqmc}.
 
 \begin{figure}
