@@ -69,7 +69,7 @@ def viznode(node_coords, node_grad, cutoffs, vizfile='viznode.pdf'):
 
   ax[0].set_ylabel(r'$E_L\frac{\partial_p \Psi}{\Psi} f_\epsilon |\Psi|^2$')
   ax[1].set_ylabel(r'log$_{10}((E_L\frac{\partial_p \Psi}{\Psi})^2 f_\epsilon^2|\Psi|^2)$')
-  ax[1].set_xlabel(r'$x$ (Bohr)')
+  ax[1].set_xlabel(r'$l$ (Bohr)')
   ax[0].set_xlim((-max(x) - 0.02,max(x) + 0.02))
   ax[1].set_xlim((-max(x) - 0.02,max(x) + 0.02))
   ax[0].legend(loc='best',title=r'$\epsilon$ (Bohr)')
