@@ -117,7 +117,8 @@ The bias of the regularized estimator is
 \label{eq:estimator_bias}
 \end{equation}
 Following the analysis of the previous paragraph, we evaluate the bias to lowest non-vanishing order in $\epsilon$ by Taylor expanding the integrand in powers of $|\vec{R} - \vec{N}|$ and calculating the bias at each order in the expansion.
-The constant and linear order terms in the Taylor expansion do not contribute to the bias, the latter by parity of the integrand, the prior by explicit integration of $f_\epsilon$ in Eqn~\ref{eq:regularizing_function}.
+The constant term in the Taylor expansion does not contribute to the bias by parity of the integrand.
+Further, the choice of coefficients for $f_\epsilon$ in Eq~\ref{eq:regularizing_function} ensures the first order term vanishes, as proven in the appendix.
 The lowest non-vanishing contribution to the bias is due to term in the Taylor expansion $\propto l^2$, yielding an integral which scales as $\epsilon^3$.
 
 This cubic bias can be removed by a zero-bias extrapolation carried out in four steps.
