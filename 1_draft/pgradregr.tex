@@ -2,8 +2,6 @@
 \usepackage{amsmath}
 \usepackage{mathtools}
 \usepackage{xcolor}
-\newcommand{\lucas}[1]{\textbf{\textcolor{blue}{LKW: #1}}}
-\newcommand{\shivesh}[1]{\textbf{\textcolor{purple}{SP: #1}}}
 
 \begin{document}
 \title{A light weight regularization for wave function parameter gradients
@@ -48,7 +46,7 @@ In this paper, we derive and test a simple regularized estimator for $\partial E
 Instead of guiding wave functions, the divergent variance of the na\"ive Monte Carlo estimator is removed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(\vec{p}, \vec{R})$. 
 We show that the bias scales as $\epsilon^3$ and the variance scales as $1/\epsilon$. 
 This estimator requires essentially no modification to simple VMC codes. 
-For a realistic system, we test that the predicted scaling is seen in a real calculation, and show that extrapolation to zero bias is straightforward and requires no .
+For a realistic system, we test that the predicted scaling is seen in a real calculation, and show that extrapolation to zero bias is straightforward and requires no extra computation.
 
 \section{Regularized estimator}
 The na\"ive Monte Carlo estimate for $\partial E/\partial p$ evaluated on a wave function $\Psi(\vec{R}, \vec{p})$ is 
@@ -110,7 +108,7 @@ To lowest order in $\epsilon$, the variance of Eqn~\ref{eq:regularized_estimator
 This can be seen by carrying out the integral Eqn~\ref{eq:convergent_integral} as $\epsilon\rightarrow 0 $. 
 Since the regularization is only present for $|\vec{x}/\epsilon| < 1$, the lowest order scaling with $\epsilon$ appears in the integration domain $|\vec{x}/\epsilon| < 1$. 
 Within this domain, the limit $\epsilon \rightarrow 0$ is equivalent to $|\vec{R} - \vec{N}| \rightarrow 0$, and the limiting integrand of Eqn~\ref{eq:convergent_integrand} can be used. 
-Making the change of variables $\vec{R} \rightarrow (l, \vec{N})$ where $l$ is the normal coordinate to the nodal surface and $\vec{N}$ is the coordinate of the nodal surface, Eqn ~\ref{eq:convergent_integral} to lowest order in $\epsilon$ is 
+Making the change of variables $\vec{R} \rightarrow (l, \vec{N})$ where $l$ is the normal coordinate to the nodal surface and $\vec{N}$ is the coordinate of the nodal surface, Eqn~\ref{eq:convergent_integral} to lowest order in $\epsilon$ is 
 \begin{equation}
 \propto \int dN \frac{1}{|\nabla\Psi(\vec{N})|^2} \int_{-\epsilon}^{\epsilon} dl \frac{l^2}{\epsilon^4} \propto \frac{1}{\epsilon}.
 \end{equation}
@@ -240,7 +238,7 @@ $$
 \lim_{\epsilon\rightarrow 0} \int_{|\vec{x}/\epsilon|< 1} (f_\epsilon - 1) dR = 0.
 $$
 The leading order contribution to the bias arises from the breakdown of the Taylor approximation $\hat{H}\Psi$ and $\partial_p \Psi \simeq const$, and results in a bias $O(\epsilon^3)$.
-The quadratic contribution to the bias is zero as $f_\epsilon$ is even in $|\vec{R}-\vec{N}|$.
+%The quadratic contribution to the bias is zero as $f_\epsilon$ is even in $|\vec{R}-\vec{N}|$.
 
 A final set of continuity and smoothness conditions on $f_\epsilon$ at $|\vec{x}/\epsilon| = 1$ reduce the magnitude of the cubic bias.
 These two conditions can be written as 
