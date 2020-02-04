@@ -19,10 +19,10 @@
 \date{\today}
 \begin{abstract}
 The parameter derivative of the expectation value of the energy, $\partial E/\partial p$, is a key ingredient in variational quantum Monte Carlo (VMC) wave function optimization methods.
-A na\"ive Monte Carlo estimate of this derivative suffers from an infinite variance which inhibits the efficiency of optimization methods that rely on a stable estimate of the derivative.
+In some cases, a na\"ive Monte Carlo estimate of this derivative suffers from an infinite variance which inhibits the efficiency of optimization methods that rely on a stable estimate of the derivative.
 In this work, we derive a simple regularization of the na\"ive estimator which is trivial to implement in existing VMC codes, has finite variance, and a negligible bias which can be extrapolated to zero bias with no extra cost.
 We use this estimator to construct an unbiased, finite variance estimation of $\partial E/\partial p$ for a multi-Slater-Jastrow trial wave function on the LiH molecule.
-This regularized estimator stands as a light weight option for stable estimation of $\partial E/\partial p$ in VMC optimization techniques.
+This regularized estimator is a simple and efficient estimator of $\partial E/\partial p$ for VMC optimization techniques.
 \end{abstract}
 \maketitle 
 
@@ -34,20 +34,21 @@ Within these techniques, the parameters $\vec{p}$ in a wavefunction $\Psi(\vec{R
 This is accomplished through iterative approaches where a stochastic estimate of the gradient $\partial E(\vec{p})/\partial p$ is used in updating the parameter $p$ at each iteration. 
 Low bias and low variance evaluations of the derivative directly improve the efficiency of stochastic wave function optimization techniques. 
 
-The simplest estimator for $\partial E/\partial p$ is the derivative of the energy expectation value (Eqn~\ref{eq:naive_estimator}).
-This estimator is unbiased and has a zero-variance principle for any wave function parameter $p$ in the limit of $\Psi(\vec{R}, \vec{p})$ being an eigenstate of $\hat{H}$.
-However, the variance of this estimator diverges when $\Psi$ is not an exact eigenstate and $p$ is a parameter which affects the nodes of the wave function, as in the case of orbital or determinantal coefficients \cite{Avella, doi:10.1063/1.4933112}.
+The simplest estimator for $\partial E/\partial p$ is the derivative of the energy expectation value (Eqn~\ref{eq:naive_estimator} in the methods).
+This estimator is unbiased and has a zero-variance principle for any wave function parameter $p$ if $\Psi(\vec{R}, \vec{p})$ is an eigenstate of $\hat{H}$.
+However, the variance of this estimator diverges when $\Psi$ is not an exact eigenstate and $p$ is a parameter which affects the nodes of the wave function, as occurs in the case of orbital or determinant coefficients \cite{Avella, doi:10.1063/1.4933112}.
 
-The infinite variance has been removed in several ways. 
+Previous to this work, the infinite variance has been removed in several ways. 
 One method is to sample from distributions other than the trial wave function squared.\cite{Avella, Attaccalite2008, Zen2013} 
 This method has a small bias\cite{doi:10.1063/1.4933112} due to nonlinearity in the estimator, which is removed as the sample size increases.
 Alternatively, one can modify the estimator using an auxillary wave function.\cite{Assaraf1999, doi:10.1063/1.1286598, Assaraf2003}
-However, both of these approaches require the use of complex guiding or auxillary functions to implement the algorithm.
+However, both of these approaches require a choice of guiding or auxillary functions to implement the algorithm.
 
-We derive and test a simple regularized estimator for $\partial E/\partial p$ which has finite variance and can be efficiently extrapolated to zero bias.
-Instead of relying on guiding wave functions, the divergent variance of the na\"ive Monte Carlo estimator is suppressed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(\vec{p}, \vec{R})$. 
+In this paper, we derive and test a simple regularized estimator for $\partial E/\partial p$ which has finite variance and can be efficiently extrapolated to zero bias.
+Instead of guiding wave functions, the divergent variance of the na\"ive Monte Carlo estimator is removed via multiplication by a polynomial function within a distance $\epsilon$ of the nodes of $\Psi(\vec{p}, \vec{R})$. 
 We show that the bias scales as $\epsilon^3$ and the variance scales as $1/\epsilon$. 
-For a realistic system, we test that the predicted scaling is seen in a real calculation, and show that extrapolation to zero bias is trivial.
+This estimator requires essentially no modification to simple VMC codes. 
+For a realistic system, we test that the predicted scaling is seen in a real calculation, and show that extrapolation to zero bias is straightforward and requires no .
 
 \section{Regularized estimator}
 The na\"ive Monte Carlo estimate for $\partial E/\partial p$ evaluated on a wave function $\Psi(\vec{R}, \vec{p})$ is 
@@ -94,14 +95,18 @@ In evaluating the variance of Eqn~\ref{eq:regularized_estimator}, the divergent 
 \end{equation}
 Unlike the integrand of Eqn~\ref{eq:divergent_integral}, the regularized integrand does not diverge near the nodes of $\Psi$. 
 This is seen by Taylor expanding the integrand to lowest non-vanishing order in $|\vec{R} - \vec{N}|$. 
-Substituting the limiting relationships for $\hat{H}\Psi, \ \partial_p \Psi$ and $\Psi$ from above and noting $\vec{x} \simeq \Big[\nabla\Psi(\vec{N}) \cdot (\vec{R} - \vec{N}) \Big]\nabla \Psi(\vec{N}) / |\nabla \Psi(\vec{N})|^2$ as $|\vec{R} - \vec{N}| \rightarrow 0$, we find the limiting behavior of the regularized integrand near the nodes of $\Psi$: 
+Substituting the limiting relationships for $\hat{H}\Psi, \ \partial_p \Psi$ and $\Psi$ from above and noting 
+\begin{equation}
+   \vec{x} \simeq \Big[\nabla\Psi(\vec{N}) \cdot (\vec{R} - \vec{N}) \Big] \frac{\nabla \Psi(\vec{N})}{|\nabla \Psi(\vec{N})|^2}
+\end{equation} 
+ as $|\vec{R} - \vec{N}| \rightarrow 0$, we find the limiting behavior of the regularized integrand near the nodes of $\Psi$: 
 \begin{equation}
 \lim_{|\vec{R} - \vec{N}| \rightarrow 0 } \Big(E_L\frac{\partial_p\Psi}{\Psi}\Big)^2 f_\epsilon^2 |\Psi|^2 \propto \frac{|\nabla\Psi(\vec{N}) \cdot (\vec{R} - \vec{N})|^2}{|\nabla\Psi(\vec{N)}|^4 \epsilon^4}\rightarrow 0.
 \label{eq:convergent_integrand}
 \end{equation}
 The regularized estimator thus removes the divergent contribution to the variance present in Eqn~\ref{eq:divergent_integral} and results in a finite variance estimation of $\partial E/\partial p$ for any $\epsilon > 0$.
 
-Furthermore, the variance of Eqn~\ref{eq:regularized_estimator} decreases as $1/\epsilon$ to lowest order in $\epsilon$.
+To lowest order in $\epsilon$, the variance of Eqn~\ref{eq:regularized_estimator} decreases as $1/\epsilon$.
 This can be seen by carrying out the integral Eqn~\ref{eq:convergent_integral} as $\epsilon\rightarrow 0 $. 
 Since the regularization is only present for $|\vec{x}/\epsilon| < 1$, the lowest order scaling with $\epsilon$ appears in the integration domain $|\vec{x}/\epsilon| < 1$. 
 Within this domain, the limit $\epsilon \rightarrow 0$ is equivalent to $|\vec{R} - \vec{N}| \rightarrow 0$, and the limiting integrand of Eqn~\ref{eq:convergent_integrand} can be used. 
@@ -113,7 +118,7 @@ Making the change of variables $\vec{R} \rightarrow (l, \vec{N})$ where $l$ is t
 The suppressed variance of the estimate comes at a cost, in the form of cubic bias $O(\epsilon^3)$ to lowest order in $\epsilon$.
 The bias of the regularized estimator is
 \begin{equation}
-\text{Bias: } \int_{|\vec{x}/\epsilon|< 1} H\Psi \partial_p \Psi (f_\epsilon - 1) dR.
+\int_{|\vec{x}/\epsilon|< 1} (H\Psi) (\partial_p \Psi) (f_\epsilon - 1) dR.
 \label{eq:estimator_bias}
 \end{equation}
 Following the analysis of the previous paragraph, we evaluate the bias to lowest non-vanishing order in $\epsilon$ by Taylor expanding the integrand in powers of $|\vec{R} - \vec{N}|$ and calculating the bias at each order in the expansion.
@@ -138,7 +143,7 @@ We verify the predicted mathematical behavior of $\hat{\theta}_\epsilon$ by comp
 The determinants $|D_i \rangle$ and coefficients $c_i$ were taken from a full configuration interaction (CI) expansion over the Li 1s, 2s, 2p and H 1s orbitals.
 The orbitals were constructed from a restricted open-shell Hartree Fock (ROHF) calculation using a correlation consistent quadruple-zeta valence basis set \cite{doi:10.1063/1.456153}.
 A 2-body Jastrow factor $J(\vec{\alpha})$ of the form in \cite{Wagner2009} was used with $\vec{\alpha} = 0$ except for electron-electron cusp conditions.
-The ROHF and CI calculations were done using the PySCF package \cite{PYSCF} and all QMC calculations were carried out using PyQMC \cite{pyqmc}.
+The ROHF and CI calculations were done using the PySCF package \cite{PYSCF} and all QMC calculations were carried out using \texttt{pyqmc}\cite{pyqmc}.
 
 \begin{figure}
 \includegraphics[width=1.0\columnwidth]{../2_plots/viznode.pdf}
@@ -156,7 +161,11 @@ The ROHF and CI calculations were done using the PySCF package \cite{PYSCF} and 
 \end{figure}
 
 We begin by verifying that the regularized integral in Eqn~\ref{eq:convergent_integral} has finite value across a node for $\epsilon > 0$. 
-To do so, we evaluate the regularized integrand for various $\epsilon$ along a path which passes through a node $\vec{N}$, $\vec{R}(x) = \vec{N} + l \nabla \Psi(\vec{N})/|\nabla \Psi(\vec{N})|$ with $l \in [-0.1, 0.1]$ Bohr.
+To do so, we evaluate the regularized integrand for various $\epsilon$ along a path which passes through a node $\vec{N}$, 
+\begin{equation}
+   \vec{R}(x) = \vec{N} + l \nabla \Psi(\vec{N})/|\nabla \Psi(\vec{N})|,
+\end{equation}
+ with $l \in [-0.1, 0.1]$ Bohr.
 The results are shown in the lower plot of Figure 1.
 For all values of $\epsilon$, the value of the integrand is pushed to zero at the node, removing the divergence in the integral.
 The sharp increase in the integrand near $l=0$ as $\epsilon$ decreases is indicative of the increase in the value of the integral, and hence estimator variance, as $\epsilon \rightarrow 0$.
