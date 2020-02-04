@@ -1,7 +1,6 @@
 \documentclass[twocolumn]{revtex4-1}
 \usepackage{amsmath}
 \usepackage{mathtools}
-\usepackage{xcolor}
 
 \begin{document}
 \title{A light weight regularization for wave function parameter gradients
@@ -238,7 +237,6 @@ $$
 \lim_{\epsilon\rightarrow 0} \int_{|\vec{x}/\epsilon|< 1} (f_\epsilon - 1) dR = 0.
 $$
 The leading order contribution to the bias arises from the breakdown of the Taylor approximation $\hat{H}\Psi$ and $\partial_p \Psi \simeq const$, and results in a bias $O(\epsilon^3)$.
-%The quadratic contribution to the bias is zero as $f_\epsilon$ is even in $|\vec{R}-\vec{N}|$.
 
 A final set of continuity and smoothness conditions on $f_\epsilon$ at $|\vec{x}/\epsilon| = 1$ reduce the magnitude of the cubic bias.
 These two conditions can be written as 
